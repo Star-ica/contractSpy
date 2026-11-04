@@ -1,0 +1,1900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ContractWatch – Smart Contract Security Monitoring on BOT Chain</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.1/ethers.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ══════════════════════════════════════════════════════
+   ROOT TOKENS
+══════════════════════════════════════════════════════ */
+:root{
+  --bg0:#050a12;
+  --bg1:#080f1c;
+  --bg2:#0c1526;
+  --bg3:#101d33;
+  --bg4:#162540;
+  --surface:#111c30;
+  --surface2:#172238;
+  --border:#1e3050;
+  --border2:#243b62;
+
+  --green:#00e676;
+  --green-dim:#00c853;
+  --green-glow:rgba(0,230,118,.18);
+  --blue:#2196f3;
+  --blue-dim:#1565c0;
+  --blue-glow:rgba(33,150,243,.18);
+  --cyan:#00bcd4;
+  --purple:#7c4dff;
+  --yellow:#ffea00;
+  --red:#f44336;
+  --orange:#ff9800;
+
+  --text-primary:#e8f0fe;
+  --text-secondary:#8aabcf;
+  --text-muted:#4a6080;
+
+  --radius:8px;
+  --radius-lg:14px;
+  --shadow:0 4px 24px rgba(0,0,0,.55);
+  --transition:.2s ease;
+  --font:"Inter","Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg0);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+input,select,textarea{font-family:inherit}
+
+/* ── Utility ─────────────────────────────────────── */
+.hidden{display:none!important}
+.flex{display:flex}
+.flex-col{display:flex;flex-direction:column}
+.items-center{align-items:center}
+.justify-between{justify-content:space-between}
+.gap-2{gap:.5rem}
+.gap-3{gap:.75rem}
+.gap-4{gap:1rem}
+.gap-6{gap:1.5rem}
+.text-green{color:var(--green)}
+.text-blue{color:var(--blue)}
+.text-red{color:var(--red)}
+.text-yellow{color:var(--yellow)}
+.text-orange{color:var(--orange)}
+.text-muted{color:var(--text-muted)}
+.text-secondary{color:var(--text-secondary)}
+.font-bold{font-weight:700}
+.font-semibold{font-weight:600}
+.text-sm{font-size:.85rem}
+.text-xs{font-size:.75rem}
+.text-lg{font-size:1.1rem}
+.text-xl{font-size:1.3rem}
+.text-2xl{font-size:1.6rem}
+.text-3xl{font-size:2rem}
+.text-4xl{font-size:2.6rem}
+.w-full{width:100%}
+.mt-1{margin-top:.25rem}
+.mt-2{margin-top:.5rem}
+.mt-4{margin-top:1rem}
+.mb-2{margin-bottom:.5rem}
+.mb-4{margin-bottom:1rem}
+.p-4{padding:1rem}
+.py-2{padding:.5rem 0}
+.px-4{padding:0 1rem}
+.rounded{border-radius:var(--radius)}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── Scrollbar ────────────────────────────────────── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg1)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ══════════════════════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════════════════════ */
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.4rem;border-radius:var(--radius);font-size:.9rem;font-weight:600;transition:var(--transition);white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--green),var(--cyan));color:#000}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 0 20px var(--green-glow)}
+.btn-secondary{background:transparent;border:1px solid var(--green);color:var(--green)}
+.btn-secondary:hover{background:var(--green-glow)}
+.btn-blue{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff}
+.btn-blue:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text-secondary)}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+.btn-danger{background:transparent;border:1px solid var(--red);color:var(--red)}
+.btn-danger:hover{background:rgba(244,67,54,.1)}
+.btn-sm{padding:.4rem .9rem;font-size:.8rem}
+.btn-lg{padding:.85rem 2rem;font-size:1rem}
+.btn-icon{width:36px;height:36px;padding:0;justify-content:center;border-radius:50%}
+
+/* ── Spinners / Loading ───────────────────────────── */
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ══════════════════════════════════════════════════════
+   CARDS
+══════════════════════════════════════════════════════ */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
+.card-hover{transition:var(--transition)}
+.card-hover:hover{border-color:var(--border2);box-shadow:0 0 20px rgba(0,0,0,.4)}
+.card-title{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.5rem}
+
+/* ── Stat cards ───────────────────────────────────── */
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.2rem;position:relative;overflow:hidden;transition:var(--transition)}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:var(--shadow)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent,var(--green))}
+.stat-card .value{font-size:1.8rem;font-weight:700;line-height:1}
+.stat-card .label{font-size:.75rem;color:var(--text-muted);margin-top:.3rem;text-transform:uppercase;letter-spacing:.06em}
+
+/* ── Badge / Pill ─────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:20px;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.badge-green{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.25)}
+.badge-blue{background:rgba(33,150,243,.12);color:var(--blue);border:1px solid rgba(33,150,243,.25)}
+.badge-red{background:rgba(244,67,54,.12);color:var(--red);border:1px solid rgba(244,67,54,.25)}
+.badge-orange{background:rgba(255,152,0,.12);color:var(--orange);border:1px solid rgba(255,152,0,.25)}
+.badge-yellow{background:rgba(255,234,0,.12);color:var(--yellow);border:1px solid rgba(255,234,0,.25)}
+.badge-muted{background:var(--bg2);color:var(--text-muted);border:1px solid var(--border)}
+
+/* ── Severity indicator ───────────────────────────── */
+.sev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sev-low .sev-dot{background:var(--blue)}
+.sev-medium .sev-dot{background:var(--orange)}
+.sev-critical .sev-dot{background:var(--red);box-shadow:0 0 6px var(--red)}
+
+/* ══════════════════════════════════════════════════════
+   FORMS
+══════════════════════════════════════════════════════ */
+.form-group{display:flex;flex-direction:column;gap:.35rem}
+.form-label{font-size:.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em}
+.form-input{background:var(--bg2);border:1px solid var(--border);color:var(--text-primary);padding:.65rem .9rem;border-radius:var(--radius);font-size:.9rem;width:100%;transition:var(--transition)}
+.form-input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 2px var(--green-glow)}
+.form-input::placeholder{color:var(--text-muted)}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238aabcf' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center;padding-right:2.2rem}
+.form-textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}}
+
+/* ── Toggle ───────────────────────────────────────── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:var(--bg3);border-radius:11px;transition:var(--transition);cursor:pointer}
+.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;bottom:3px;left:3px;transition:var(--transition)}
+.toggle input:checked+.toggle-slider{background:var(--green)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px)}
+
+/* ══════════════════════════════════════════════════════
+   MODALS
+══════════════════════════════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:1000;padding:1rem;backdrop-filter:blur(4px)}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(-20px)}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem;border-bottom:1px solid var(--border)}
+.modal-title{font-size:1rem;font-weight:700}
+.modal-body{padding:1.4rem;overflow-y:auto;flex:1}
+.modal-footer{padding:1rem 1.4rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.75rem}
+.modal-close{background:transparent;color:var(--text-muted);font-size:1.3rem;padding:.2rem;cursor:pointer;line-height:1;transition:var(--transition)}
+.modal-close:hover{color:var(--text-primary)}
+
+/* ══════════════════════════════════════════════════════
+   TABLES
+══════════════════════════════════════════════════════ */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);padding:.6rem .9rem;text-align:left;border-bottom:1px solid var(--border)}
+td{font-size:.85rem;padding:.7rem .9rem;border-bottom:1px solid var(--border);color:var(--text-secondary)}
+td:first-child{color:var(--text-primary)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg3)}
+
+/* ══════════════════════════════════════════════════════
+   TOAST / NOTIFICATIONS
+══════════════════════════════════════════════════════ */
+#toast-container{position:fixed;top:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;width:320px}
+.toast{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:.8rem 1.1rem;font-size:.85rem;display:flex;align-items:flex-start;gap:.6rem;animation:toastIn .2s ease;box-shadow:var(--shadow)}
+.toast.success{border-left:3px solid var(--green)}
+.toast.error{border-left:3px solid var(--red)}
+.toast.info{border-left:3px solid var(--blue)}
+.toast.warning{border-left:3px solid var(--orange)}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}}
+.toast-icon{font-size:1rem;flex-shrink:0;margin-top:.05rem}
+.toast-msg{line-height:1.4;color:var(--text-primary)}
+
+/* ══════════════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════════════ */
+#nav{position:fixed;top:0;width:100%;z-index:200;border-bottom:1px solid transparent;transition:var(--transition)}
+#nav.scrolled{background:rgba(5,10,18,.95);backdrop-filter:blur(10px);border-color:var(--border)}
+.nav-inner{max-width:1200px;margin:0 auto;padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:.7rem;font-size:1.1rem;font-weight:800}
+.nav-logo svg{width:32px;height:32px}
+.nav-links{display:flex;align-items:center;gap:1.8rem}
+.nav-links a{font-size:.88rem;font-weight:500;color:var(--text-secondary);transition:var(--transition)}
+.nav-links a:hover{color:var(--green)}
+.nav-actions{display:flex;align-items:center;gap:.8rem}
+.wallet-addr{font-size:.8rem;font-family:monospace;color:var(--green);background:var(--green-glow);border:1px solid rgba(0,230,118,.2);padding:.3rem .7rem;border-radius:var(--radius)}
+@media(max-width:768px){.nav-links{display:none}.nav-logo span{display:none}}
+
+/* ══════════════════════════════════════════════════════
+   LANDING PAGE
+══════════════════════════════════════════════════════ */
+#landing{min-height:100vh}
+
+/* ── Particle canvas ──────────────────────────────── */
+#particle-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35}
+
+/* ── Hero ─────────────────────────────────────────── */
+#hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:6rem 1.5rem 4rem;position:relative;z-index:1}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:.5rem;background:var(--green-glow);border:1px solid rgba(0,230,118,.2);color:var(--green);padding:.35rem .9rem;border-radius:20px;font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1.5rem}
+.hero-title{font-size:clamp(2.4rem,6vw,4.5rem);font-weight:900;line-height:1.08;letter-spacing:-.03em;margin-bottom:1.2rem}
+.hero-title .accent{background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:clamp(1rem,2vw,1.2rem);color:var(--text-secondary);max-width:580px;margin:0 auto 2.5rem;line-height:1.6}
+.hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.hero-stats{display:flex;gap:2rem;justify-content:center;margin-top:3rem;flex-wrap:wrap}
+.hero-stat{text-align:center}
+.hero-stat-value{font-size:1.8rem;font-weight:800;color:var(--green)}
+.hero-stat-label{font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em}
+.hero-glow{position:absolute;top:50%;left:50%;width:600px;height:600px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(0,230,118,.06) 0%,transparent 70%);pointer-events:none}
+
+/* ── Section common ───────────────────────────────── */
+.section{padding:5rem 1.5rem;position:relative;z-index:1}
+.section-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--green);margin-bottom:.5rem}
+.section-title{font-size:clamp(1.6rem,3.5vw,2.5rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.8rem}
+.section-sub{font-size:1rem;color:var(--text-secondary);max-width:500px;line-height:1.6}
+.section-header{margin-bottom:3rem}
+.section-header.centered{text-align:center}
+.section-header.centered .section-sub{margin:0 auto}
+.container{max-width:1200px;margin:0 auto}
+
+/* ── Feature grid ─────────────────────────────────── */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.25rem}
+.feature-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;transition:var(--transition)}
+.feature-card:hover{border-color:var(--green);box-shadow:0 0 25px var(--green-glow);transform:translateY(-3px)}
+.feature-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;background:var(--green-glow);border:1px solid rgba(0,230,118,.15)}
+.feature-title{font-size:.95rem;font-weight:700;margin-bottom:.5rem}
+.feature-desc{font-size:.85rem;color:var(--text-secondary);line-height:1.6}
+
+/* ── How it works ─────────────────────────────────── */
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem}
+.how-step{text-align:center;position:relative}
+.step-num{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:#000;margin:0 auto 1rem;box-shadow:0 0 20px var(--green-glow)}
+.step-title{font-size:.95rem;font-weight:700;margin-bottom:.4rem}
+.step-desc{font-size:.83rem;color:var(--text-secondary);line-height:1.6}
+
+/* ── Network section ──────────────────────────────── */
+.network-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;max-width:700px;margin:0 auto}
+.network-logo{width:70px;height:70px;border-radius:16px;background:linear-gradient(135deg,#1a56db,#0c90db);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:900;color:#fff;flex-shrink:0}
+.network-info h3{font-size:1.2rem;font-weight:700;margin-bottom:.3rem}
+.network-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+.network-pill{background:var(--bg3);border:1px solid var(--border2);padding:.3rem .8rem;border-radius:20px;font-size:.75rem;color:var(--text-secondary)}
+.network-pill span{color:var(--green)}
+
+/* ── Stats section ────────────────────────────────── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1.25rem}
+.stat-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;text-align:center;position:relative;overflow:hidden}
+.stat-block::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.stat-block-value{font-size:2rem;font-weight:800;color:var(--green)}
+.stat-block-label{font-size:.75rem;color:var(--text-muted);margin-top:.3rem;text-transform:uppercase;letter-spacing:.07em}
+
+/* ── FAQ ──────────────────────────────────────────── */
+.faq-list{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:.6rem}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.faq-q{padding:1rem 1.2rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;transition:var(--transition);font-size:.92rem}
+.faq-q:hover{color:var(--green)}
+.faq-arrow{transition:transform .2s;font-size:.8rem;color:var(--text-muted);flex-shrink:0}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;font-size:.87rem;color:var(--text-secondary);line-height:1.7;padding:0 1.2rem}
+.faq-item.open .faq-a{max-height:300px;padding:0 1.2rem 1rem}
+
+/* ── Footer ───────────────────────────────────────── */
+footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5rem 1.5rem;position:relative;z-index:1}
+.footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;margin-bottom:2.5rem}
+@media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.footer-grid{grid-template-columns:1fr}}
+.footer-brand{display:flex;align-items:center;gap:.7rem;font-size:1rem;font-weight:800;margin-bottom:.8rem}
+.footer-desc{font-size:.83rem;color:var(--text-muted);line-height:1.6}
+.footer-col-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-secondary);margin-bottom.8rem;margin-bottom:.8rem}
+.footer-links{display:flex;flex-direction:column;gap:.5rem}
+.footer-links a{font-size:.83rem;color:var(--text-muted);transition:var(--transition)}
+.footer-links a:hover{color:var(--green)}
+.footer-bottom{max-width:1200px;margin:0 auto;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+.footer-bottom p{font-size:.78rem;color:var(--text-muted)}
+
+/* ══════════════════════════════════════════════════════
+   APP (Dashboard)
+══════════════════════════════════════════════════════ */
+#app{display:none;min-height:100vh;padding-top:60px}
+.app-layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 60px)}
+@media(max-width:900px){.app-layout{grid-template-columns:1fr}}
+
+/* ── Sidebar ──────────────────────────────────────── */
+.sidebar{background:var(--bg1);border-right:1px solid var(--border);padding:1.5rem 1rem;display:flex;flex-direction:column;gap:.3rem;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
+@media(max-width:900px){.sidebar{display:none}}
+.sidebar-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);padding:.5rem .8rem .3rem;margin-top:.5rem}
+.nav-item{display:flex;align-items:center;gap:.7rem;padding:.6rem .8rem;border-radius:var(--radius);font-size:.88rem;font-weight:500;color:var(--text-secondary);transition:var(--transition);cursor:pointer}
+.nav-item:hover{background:var(--bg2);color:var(--text-primary)}
+.nav-item.active{background:var(--green-glow);color:var(--green);font-weight:600;border-left:2px solid var(--green)}
+.nav-item-icon{width:18px;text-align:center;flex-shrink:0}
+.sidebar-footer{margin-top:auto;padding-top:1rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--text-muted)}
+
+/* ── Main content ─────────────────────────────────── */
+.main-content{padding:1.5rem;overflow-y:auto}
+.page-header{margin-bottom:1.5rem}
+.page-title{font-size:1.4rem;font-weight:800}
+.page-sub{font-size:.85rem;color:var(--text-secondary);margin-top:.2rem}
+
+/* ── Dashboard ────────────────────────────────────── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-bottom:1.5rem}
+
+/* ── Contracts list ───────────────────────────────── */
+.contracts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.contract-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.2rem;transition:var(--transition);cursor:pointer}
+.contract-card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:var(--shadow)}
+.contract-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem}
+.contract-name{font-weight:700;font-size:.95rem}
+.contract-addr{font-family:monospace;font-size:.75rem;color:var(--text-muted);margin-top:.2rem}
+.contract-net{font-size:.72rem;background:var(--blue-glow);border:1px solid rgba(33,150,243,.2);color:var(--blue);padding:.2rem .6rem;border-radius:12px}
+.contract-desc{font-size:.82rem;color:var(--text-secondary);margin:.6rem 0;line-height:1.5}
+.contract-meta{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.contract-footer{display:flex;justify-content:space-between;align-items:center;margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--border)}
+
+/* ── Activity feed ────────────────────────────────── */
+.activity-item{display:flex;gap.75rem;gap:.75rem;padding:.85rem;border-bottom:1px solid var(--border);align-items:flex-start}
+.activity-item:last-child{border-bottom:none}
+.activity-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.activity-info{flex:1;min-width:0}
+.activity-title{font-size:.87rem;font-weight:600}
+.activity-meta{font-size:.76rem;color:var(--text-muted);margin-top:.2rem}
+
+/* ── Alert items ──────────────────────────────────── */
+.alert-item{display:flex;gap:.75rem;align-items:flex-start;padding:.9rem;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);transition:var(--transition)}
+.alert-item:hover{border-color:var(--border2)}
+.alert-item+.alert-item{margin-top:.5rem}
+.alert-info{flex:1;min-width:0}
+.alert-title{font-size:.87rem;font-weight:600}
+.alert-desc{font-size:.78rem;color:var(--text-secondary);margin-top:.2rem;line-height:1.5}
+.alert-meta{font-size:.73rem;color:var(--text-muted);margin-top:.3rem}
+.alert-actions{display:flex;gap:.4rem;flex-shrink:0}
+
+/* ── Tabs ─────────────────────────────────────────── */
+.tabs{display:flex;gap:.4rem;border-bottom:1px solid var(--border);margin-bottom:1.2rem;overflow-x:auto}
+.tab{padding:.55rem 1rem;font-size:.85rem;font-weight:600;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:var(--transition);white-space:nowrap}
+.tab:hover{color:var(--text-secondary)}
+.tab.active{color:var(--green);border-bottom-color:var(--green)}
+
+/* ── Monitor status indicator ─────────────────────── */
+.monitor-pulse{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--green)}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+
+/* ── Empty state ──────────────────────────────────── */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text-muted)}
+.empty-icon{font-size:3rem;margin-bottom:1rem;opacity:.4}
+.empty-title{font-size:1rem;font-weight:600;color:var(--text-secondary);margin-bottom:.4rem}
+.empty-desc{font-size:.85rem;line-height:1.6}
+
+/* ── Charts ───────────────────────────────────────── */
+.chart-container{position:relative;height:220px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem}
+
+/* ── Loading overlay ──────────────────────────────── */
+#loading-overlay{position:fixed;inset:0;background:rgba(5,10,18,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;z-index:500}
+.loading-logo{font-size:1.3rem;font-weight:800;display:flex;align-items:center;gap:.7rem}
+.loading-bar{width:200px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.loading-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:2px;animation:fill 1.5s ease forwards}
+@keyframes fill{from{width:0}to{width:100%}}
+.loading-text{font-size:.85rem;color:var(--text-muted)}
+
+/* ── Detail page ──────────────────────────────────── */
+.detail-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.4rem;margin-bottom:1.2rem}
+.detail-addr{font-family:monospace;font-size:.82rem;color:var(--cyan);word-break:break-all}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1rem}
+.detail-field{background:var(--bg2);border-radius:var(--radius);padding:.7rem .9rem}
+.detail-field-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.2rem}
+.detail-field-value{font-size:.88rem;font-weight:600}
+
+/* ── Mobile bottom nav ────────────────────────────── */
+@media(max-width:900px){
+  .mobile-nav{display:flex;position:fixed;bottom:0;width:100%;background:var(--bg1);border-top:1px solid var(--border);padding:.5rem;z-index:100;justify-content:space-around}
+  #app{padding-bottom:70px}
+}
+@media(min-width:901px){.mobile-nav{display:none}}
+.mobile-nav-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;padding:.4rem .6rem;border-radius:var(--radius);cursor:pointer;font-size:.62rem;color:var(--text-muted);transition:var(--transition);min-width:52px}
+.mobile-nav-item.active,.mobile-nav-item:hover{color:var(--green)}
+.mobile-nav-icon{font-size:1.1rem}
+
+/* ══════════════════════════════════════════════════════
+   CONNECT WALLET SCREEN
+══════════════════════════════════════════════════════ */
+#connect-screen{display:none;min-height:100vh;align-items:center;justify-content:center;padding:1rem;position:relative;z-index:10}
+.connect-box{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:2.5rem;text-align:center;max-width:420px;width:100%}
+.connect-logo{margin:0 auto 1.5rem}
+.connect-title{font-size:1.3rem;font-weight:800;margin-bottom:.5rem}
+.connect-desc{font-size:.88rem;color:var(--text-secondary);line-height:1.6;margin-bottom:2rem}
+.connect-steps{text-align:left;background:var(--bg2);border-radius:var(--radius);padding:1rem;margin-bottom:1.5rem}
+.connect-step{display:flex;gap:.6rem;align-items:flex-start;font-size:.82rem;color:var(--text-secondary);margin-bottom:.5rem}
+.connect-step:last-child{margin-bottom:0}
+.connect-step-num{width:18px;height:18px;border-radius:50%;background:var(--green);color:#000;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.05rem}
+
+/* ══════════════════════════════════════════════════════
+   REGISTER SCREEN
+══════════════════════════════════════════════════════ */
+#register-screen{display:none;min-height:100vh;align-items:center;justify-content:center;padding:1rem;position:relative;z-index:10}
+.register-box{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:2.5rem;max-width:440px;width:100%}
+.register-title{font-size:1.3rem;font-weight:800;margin-bottom:.4rem}
+.register-sub{font-size:.87rem;color:var(--text-secondary);margin-bottom:1.5rem;line-height:1.6}
+
+/* responsive tweaks */
+@media(max-width:600px){
+  .hero-stats{gap:1rem}
+  .detail-grid{grid-template-columns:1fr 1fr}
+  .modal{margin:.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Particle canvas -->
+<canvas id="particle-canvas"></canvas>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- Loading overlay -->
+<div id="loading-overlay">
+  <div class="loading-logo">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="15" stroke="#00e676" stroke-width="1.5"/>
+      <path d="M8 16l5 5 11-11" stroke="#00e676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    ContractWatch
+  </div>
+  <div class="loading-bar"><div class="loading-fill"></div></div>
+  <div class="loading-text">Initialising security platform…</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     NAV
+═══════════════════════════════════════ -->
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="15" stroke="#00e676" stroke-width="1.5"/>
+        <path d="M8 16l5 5 11-11" stroke="#00e676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>ContractWatch</span>
+    </div>
+    <div class="nav-links" id="landing-nav-links">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#network">Network</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-actions">
+      <span class="wallet-addr hidden" id="nav-wallet-addr"></span>
+      <button class="btn btn-primary btn-sm" id="nav-connect-btn" onclick="connectWallet()">🔐 Connect Wallet</button>
+      <button class="btn btn-outline btn-sm hidden" id="nav-disconnect-btn" onclick="disconnect()">Disconnect</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     LANDING
+═══════════════════════════════════════ -->
+<div id="landing">
+
+<!-- Hero -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div>
+    <div class="hero-eyebrow">🛡️ Blockchain Security Platform</div>
+    <h1 class="hero-title">Monitor. Detect.<br><span class="accent">Protect.</span></h1>
+    <p class="hero-sub">Real-time smart contract security monitoring, threat detection and on-chain alert management — purpose-built for BOT Chain.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary btn-lg" onclick="connectWallet()">🔐 Connect Wallet</button>
+      <a href="#features" class="btn btn-secondary btn-lg">Explore Features</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-value" id="stat-users">0</div><div class="hero-stat-label">Users Protected</div></div>
+      <div class="hero-stat"><div class="hero-stat-value" id="stat-contracts">0</div><div class="hero-stat-label">Contracts Monitored</div></div>
+      <div class="hero-stat"><div class="hero-stat-value" id="stat-alerts-hero">0</div><div class="hero-stat-label">Threats Detected</div></div>
+      <div class="hero-stat"><div class="hero-stat-value">BOT</div><div class="hero-stat-label">Chain Network</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Security Features</div>
+      <div class="section-title">Complete Threat Intelligence Suite</div>
+      <div class="section-sub">Everything you need to keep your contracts secure — from real-time monitoring to on-chain alert storage.</div>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">👁️</div>
+        <div class="feature-title">Real-Time Monitoring</div>
+        <div class="feature-desc">Continuously query BOT Chain RPC to detect ownership changes, minting events, and admin operations the moment they happen.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🚨</div>
+        <div class="feature-title">On-Chain Alert Records</div>
+        <div class="feature-desc">Every confirmed threat is stored immutably on BOT Chain, creating a tamper-proof audit trail of all security events.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <div class="feature-title">Transfer Analysis</div>
+        <div class="feature-desc">Detect unusual token movements and large withdrawal patterns that could indicate exploits or rug-pull preparation.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <div class="feature-title">Upgrade Detection</div>
+        <div class="feature-desc">Monitor proxy contract upgrades and administrative changes in upgradeable contracts for unauthorised modifications.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Security Reports</div>
+        <div class="feature-desc">Submit, discover and upvote community security reports — all stored on-chain for community-driven threat intelligence.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔧</div>
+        <div class="feature-title">Custom Rules</div>
+        <div class="feature-desc">Configure per-contract monitoring rules with custom thresholds for withdrawal amounts and transaction frequency.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="section" id="how-it-works" style="background:var(--bg1)">
+  <div class="container">
+    <div class="section-header centered">
+      <div class="section-label">Process</div>
+      <div class="section-title">How ContractWatch Works</div>
+      <div class="section-sub">A transparent, decentralised security workflow with no centralised backend.</div>
+    </div>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="step-num">1</div>
+        <div class="step-title">Connect Wallet</div>
+        <div class="step-desc">Connect your MetaMask or compatible wallet. ContractWatch registers your profile on BOT Chain.</div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">2</div>
+        <div class="step-title">Register Contract</div>
+        <div class="step-desc">Add any smart contract address. Your monitoring configuration is stored on-chain.</div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">3</div>
+        <div class="step-title">Monitor Events</div>
+        <div class="step-desc">The frontend polls BOT Chain RPC for contract events matching your security rules.</div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">4</div>
+        <div class="step-title">Alert Stored On-Chain</div>
+        <div class="step-desc">Confirmed threats are recorded as immutable on-chain alerts. Acknowledge them once resolved.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Network -->
+<section class="section" id="network">
+  <div class="container">
+    <div class="section-header centered">
+      <div class="section-label">Supported Network</div>
+      <div class="section-title">Built on BOT Chain</div>
+      <div class="section-sub">ContractWatch is exclusively deployed on BOT Chain — a high-performance EVM-compatible blockchain.</div>
+    </div>
+    <div class="network-card">
+      <div class="network-logo">⛓</div>
+      <div class="network-info">
+        <h3>BOT Chain (Botchain)</h3>
+        <p style="font-size:.85rem;color:var(--text-secondary)">A fast, EVM-compatible blockchain designed for decentralised applications with low fees and high throughput.</p>
+        <div class="network-meta">
+          <div class="network-pill">Chain ID <span>677</span></div>
+          <div class="network-pill">RPC <span>rpc.botchain.ai</span></div>
+          <div class="network-pill">Explorer <span>scan.botchain.ai</span></div>
+          <div class="network-pill">EVM <span>Compatible</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Platform Stats -->
+<section class="section" id="platform-stats" style="background:var(--bg1)">
+  <div class="container">
+    <div class="section-header centered">
+      <div class="section-label">Platform</div>
+      <div class="section-title">Platform Statistics</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-block"><div class="stat-block-value" id="ps-users">—</div><div class="stat-block-label">Registered Users</div></div>
+      <div class="stat-block"><div class="stat-block-value" id="ps-contracts">—</div><div class="stat-block-label">Monitored Contracts</div></div>
+      <div class="stat-block"><div class="stat-block-value" id="ps-alerts">—</div><div class="stat-block-label">Alerts Recorded</div></div>
+      <div class="stat-block"><div class="stat-block-value" id="ps-reports">—</div><div class="stat-block-label">Security Reports</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-header centered">
+      <div class="section-label">FAQ</div>
+      <div class="section-title">Frequently Asked Questions</div>
+    </div>
+    <div class="faq-list" id="faq-list"></div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">
+        <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="15" stroke="#00e676" stroke-width="1.5"/><path d="M8 16l5 5 11-11" stroke="#00e676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        ContractWatch
+      </div>
+      <div class="footer-desc">Smart contract security monitoring and threat intelligence platform, built exclusively on BOT Chain.</div>
+    </div>
+    <div>
+      <div class="footer-col-title">Platform</div>
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#network">Network</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Resources</div>
+      <div class="footer-links">
+        <a href="#" onclick="downloadWhitepaper(event)">📄 Whitepaper</a>
+        <a href="https://github.com" target="_blank">GitHub</a>
+        <a href="https://botchain.ai" target="_blank">BOT Chain</a>
+        <a href="https://scan.botchain.ai" target="_blank">Explorer</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Network</div>
+      <div class="footer-links">
+        <a href="https://botchain.ai" target="_blank">BOT Chain Website</a>
+        <a href="https://scan.botchain.ai" target="_blank">BOT Chain Explorer</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 ContractWatch. All rights reserved.</p>
+    <p>Built on <a href="https://botchain.ai" target="_blank" style="color:var(--green)">BOT Chain</a></p>
+  </div>
+</footer>
+
+</div><!-- /landing -->
+
+<!-- ═══════════════════════════════════════
+     CONNECT WALLET SCREEN
+═══════════════════════════════════════ -->
+<div id="connect-screen" class="flex">
+  <div class="connect-box">
+    <div class="connect-logo">
+      <svg width="56" height="56" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="15" stroke="#00e676" stroke-width="1.5"/><path d="M8 16l5 5 11-11" stroke="#00e676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="connect-title">Connect Your Wallet</div>
+    <div class="connect-desc">Connect your wallet to access the ContractWatch security platform on BOT Chain.</div>
+    <div class="connect-steps">
+      <div class="connect-step"><div class="connect-step-num">1</div>Your wallet will be detected and connected.</div>
+      <div class="connect-step"><div class="connect-step-num">2</div>Switch to BOT Chain (ID 677) if prompted.</div>
+      <div class="connect-step"><div class="connect-step-num">3</div>Register your profile on-chain (one-time, gas required).</div>
+    </div>
+    <button class="btn btn-primary w-full" onclick="connectWallet()">🔐 Connect MetaMask</button>
+    <button class="btn btn-outline w-full mt-2" onclick="showLanding()">← Back to Landing</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     REGISTER SCREEN
+═══════════════════════════════════════ -->
+<div id="register-screen" class="flex">
+  <div class="register-box">
+    <div class="register-title">Create Your Profile</div>
+    <div class="register-sub">You are connecting for the first time. Register your on-chain profile to begin monitoring contracts.</div>
+    <div class="flex-col gap-4">
+      <div class="form-group">
+        <label class="form-label">Username *</label>
+        <input id="reg-username" type="text" class="form-input" placeholder="Your display name" maxlength="50"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email (optional)</label>
+        <input id="reg-email" type="email" class="form-input" placeholder="contact@example.com"/>
+      </div>
+      <div class="text-xs text-muted" style="line-height:1.5">By registering, you create an on-chain profile on BOT Chain. This requires a small gas fee.</div>
+      <button class="btn btn-primary w-full" id="reg-btn" onclick="submitRegistration()">✅ Register On-Chain</button>
+      <button class="btn btn-outline w-full" onclick="disconnect()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     APP
+═══════════════════════════════════════ -->
+<div id="app">
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-label">Main</div>
+      <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard')"><span class="nav-item-icon">📊</span>Dashboard</div>
+      <div class="nav-item" data-page="contracts" onclick="showPage('contracts')"><span class="nav-item-icon">📋</span>Contracts</div>
+      <div class="nav-item" data-page="alerts" onclick="showPage('alerts')"><span class="nav-item-icon">🚨</span>Alerts</div>
+      <div class="nav-item" data-page="reports" onclick="showPage('reports')"><span class="nav-item-icon">📝</span>Reports</div>
+      <div class="sidebar-label">Account</div>
+      <div class="nav-item" data-page="profile" onclick="showPage('profile')"><span class="nav-item-icon">👤</span>Profile</div>
+      <div class="sidebar-footer">
+        <div class="monitor-pulse" id="monitor-status" style="display:none"><div class="pulse-dot"></div>Monitoring active</div>
+        <div class="mt-2">Chain: BOT Chain (677)</div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main-content" id="main-content">
+
+      <!-- ── Dashboard Page ── -->
+      <div id="page-dashboard">
+        <div class="page-header flex justify-between items-center">
+          <div>
+            <div class="page-title">Security Dashboard</div>
+            <div class="page-sub">Welcome back, <span id="dash-username">—</span></div>
+          </div>
+          <div class="flex gap-2 items-center">
+            <div class="monitor-pulse hidden" id="monitor-pulse"><div class="pulse-dot"></div> Monitoring</div>
+            <button class="btn btn-primary btn-sm" onclick="openAddContractModal()">+ Add Contract</button>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card" style="--accent:var(--green)"><div class="value" id="d-total">0</div><div class="label">Total Contracts</div></div>
+          <div class="stat-card" style="--accent:var(--blue)"><div class="value" id="d-active">0</div><div class="label">Active Monitoring</div></div>
+          <div class="stat-card" style="--accent:var(--orange)"><div class="value" id="d-alerts">0</div><div class="label">Total Alerts</div></div>
+          <div class="stat-card" style="--accent:var(--red)"><div class="value" id="d-critical">0</div><div class="label">Critical Alerts</div></div>
+          <div class="stat-card" style="--accent:var(--yellow)"><div class="value" id="d-medium">0</div><div class="label">Medium Alerts</div></div>
+        </div>
+        <div class="flex gap-4" style="flex-wrap:wrap;margin-bottom:1.5rem">
+          <div style="flex:1;min-width:260px">
+            <div class="card">
+              <div class="card-title">Alert Severity Distribution</div>
+              <div class="chart-container" style="height:180px"><canvas id="chart-severity"></canvas></div>
+            </div>
+          </div>
+          <div style="flex:1;min-width:260px">
+            <div class="card">
+              <div class="card-title">Recent Security Activity</div>
+              <div id="dash-activity-feed">
+                <div class="empty-state"><div class="empty-icon">🛡️</div><div class="empty-title">All clear</div><div class="empty-desc">No recent security events.</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title flex justify-between items-center" style="display:flex">
+            <span>Monitored Contracts</span>
+            <button class="btn btn-outline btn-sm" onclick="showPage('contracts')">View All</button>
+          </div>
+          <div id="dash-contracts-list" class="mt-2"></div>
+        </div>
+      </div>
+
+      <!-- ── Contracts Page ── -->
+      <div id="page-contracts" class="hidden">
+        <div class="page-header flex justify-between items-center">
+          <div>
+            <div class="page-title">Monitored Contracts</div>
+            <div class="page-sub">Manage and monitor your registered smart contracts</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openAddContractModal()">+ Add Contract</button>
+        </div>
+        <div id="contracts-grid" class="contracts-grid"></div>
+      </div>
+
+      <!-- ── Contract Detail Page ── -->
+      <div id="page-contract-detail" class="hidden">
+        <div class="page-header">
+          <button class="btn btn-outline btn-sm" onclick="showPage('contracts')">← Back</button>
+        </div>
+        <div id="contract-detail-content"></div>
+      </div>
+
+      <!-- ── Alerts Page ── -->
+      <div id="page-alerts" class="hidden">
+        <div class="page-header flex justify-between items-center">
+          <div>
+            <div class="page-title">Security Alerts</div>
+            <div class="page-sub">All detected threats and security events</div>
+          </div>
+          <div class="flex gap-2">
+            <select class="form-input form-select" style="width:140px" id="alert-filter-sev" onchange="renderAlerts()">
+              <option value="">All Severity</option>
+              <option value="3">Critical</option>
+              <option value="2">Medium</option>
+              <option value="1">Low</option>
+            </select>
+          </div>
+        </div>
+        <div id="alerts-list"></div>
+      </div>
+
+      <!-- ── Reports Page ── -->
+      <div id="page-reports" class="hidden">
+        <div class="page-header flex justify-between items-center">
+          <div>
+            <div class="page-title">Security Reports</div>
+            <div class="page-sub">Community-generated threat intelligence stored on-chain</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openReportModal()">+ Submit Report</button>
+        </div>
+        <div id="reports-list"></div>
+      </div>
+
+      <!-- ── Profile Page ── -->
+      <div id="page-profile" class="hidden">
+        <div class="page-header"><div class="page-title">My Profile</div></div>
+        <div class="card" style="max-width:520px">
+          <div class="card-title">On-Chain Profile</div>
+          <div id="profile-content"></div>
+        </div>
+      </div>
+
+    </div><!-- /main-content -->
+  </div><!-- /app-layout -->
+
+  <!-- Mobile bottom nav -->
+  <div class="mobile-nav">
+    <div class="mobile-nav-item active" onclick="showPage('dashboard')"><div class="mobile-nav-icon">📊</div>Dashboard</div>
+    <div class="mobile-nav-item" onclick="showPage('contracts')"><div class="mobile-nav-icon">📋</div>Contracts</div>
+    <div class="mobile-nav-item" onclick="showPage('alerts')"><div class="mobile-nav-icon">🚨</div>Alerts</div>
+    <div class="mobile-nav-item" onclick="showPage('reports')"><div class="mobile-nav-icon">📝</div>Reports</div>
+    <div class="mobile-nav-item" onclick="showPage('profile')"><div class="mobile-nav-icon">👤</div>Profile</div>
+  </div>
+</div><!-- /app -->
+
+<!-- ═══════════════════════════════════════
+     MODALS
+═══════════════════════════════════════ -->
+
+<!-- Add Contract Modal -->
+<div class="modal-overlay hidden" id="modal-add-contract">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Contract to Monitor</div>
+      <button class="modal-close" onclick="closeModal('modal-add-contract')">✕</button>
+    </div>
+    <div class="modal-body flex-col gap-4">
+      <div class="form-group">
+        <label class="form-label">Contract Address *</label>
+        <input id="ac-address" type="text" class="form-input" placeholder="0x..." />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Contract Name *</label>
+          <input id="ac-name" type="text" class="form-input" placeholder="My Token Contract" maxlength="100"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Network</label>
+          <select id="ac-network" class="form-input form-select">
+            <option value="BOT Chain|677">BOT Chain (677)</option>
+            <option value="Ethereum|1">Ethereum Mainnet</option>
+            <option value="BSC|56">BNB Smart Chain</option>
+            <option value="Polygon|137">Polygon</option>
+            <option value="Celo|42220">Celo</option>
+            <option value="Arbitrum|42161">Arbitrum One</option>
+            <option value="Optimism|10">Optimism</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea id="ac-desc" class="form-input form-textarea" placeholder="Brief description of this contract…" maxlength="500"></textarea>
+      </div>
+      <div class="card-title" style="margin-top:.5rem">Monitoring Rules</div>
+      <div class="toggle-row"><span class="text-sm">Ownership Changes</span><label class="toggle"><input type="checkbox" id="mr-ownership" checked><div class="toggle-slider"></div></label></div>
+      <div class="toggle-row"><span class="text-sm">Unexpected Minting</span><label class="toggle"><input type="checkbox" id="mr-minting" checked><div class="toggle-slider"></div></label></div>
+      <div class="toggle-row"><span class="text-sm">Large Withdrawals</span><label class="toggle"><input type="checkbox" id="mr-withdraw" checked><div class="toggle-slider"></div></label></div>
+      <div class="toggle-row"><span class="text-sm">Admin Operations</span><label class="toggle"><input type="checkbox" id="mr-admin" checked><div class="toggle-slider"></div></label></div>
+      <div class="toggle-row"><span class="text-sm">Contract Upgrades</span><label class="toggle"><input type="checkbox" id="mr-upgrade" checked><div class="toggle-slider"></div></label></div>
+      <div class="toggle-row"><span class="text-sm">Abnormal Activity</span><label class="toggle"><input type="checkbox" id="mr-abnormal" checked><div class="toggle-slider"></div></label></div>
+      <div class="toggle-row"><span class="text-sm">Token Movements</span><label class="toggle"><input type="checkbox" id="mr-token" checked><div class="toggle-slider"></div></label></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-contract')">Cancel</button>
+      <button class="btn btn-primary" id="ac-submit-btn" onclick="submitAddContract()">Register Contract</button>
+    </div>
+  </div>
+</div>
+
+<!-- Submit Report Modal -->
+<div class="modal-overlay hidden" id="modal-report">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Submit Security Report</div>
+      <button class="modal-close" onclick="closeModal('modal-report')">✕</button>
+    </div>
+    <div class="modal-body flex-col gap-4">
+      <div class="form-group">
+        <label class="form-label">Select Contract *</label>
+        <select id="rp-contract" class="form-input form-select"><option value="">Select a contract…</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Report Title *</label>
+        <input id="rp-title" type="text" class="form-input" placeholder="Brief title of the vulnerability or incident" maxlength="200"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Severity</label>
+        <select id="rp-sev" class="form-input form-select">
+          <option value="1">Low</option>
+          <option value="2" selected>Medium</option>
+          <option value="3">Critical</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Report Content *</label>
+        <textarea id="rp-content" class="form-input form-textarea" style="min-height:120px" placeholder="Detailed description of the security issue, steps to reproduce, impact assessment…" maxlength="2000"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-report')">Cancel</button>
+      <button class="btn btn-primary" id="rp-submit-btn" onclick="submitReport()">Submit On-Chain</button>
+    </div>
+  </div>
+</div>
+
+<!-- Contract Detail Modal / confirm deactivate -->
+<div class="modal-overlay hidden" id="modal-confirm">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header"><div class="modal-title" id="confirm-title">Confirm Action</div><button class="modal-close" onclick="closeModal('modal-confirm')">✕</button></div>
+    <div class="modal-body"><p id="confirm-msg" class="text-sm" style="color:var(--text-secondary);line-height:1.6"></p></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-confirm')">Cancel</button>
+      <button class="btn btn-danger" id="confirm-ok-btn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   CONFIGURATION
+══════════════════════════════════════════════════════ */
+const BOT_CHAIN = {
+  chainId:'0x2A5', // 677
+  chainName:'BOT Chain',
+  nativeCurrency:{name:'BOT',symbol:'BOT',decimals:18},
+  rpcUrls:['https://rpc.botchain.ai'],
+  blockExplorerUrls:['https://scan.botchain.ai']
+};
+
+// ── After deployment, replace this with your actual deployed address ──────────
+const CONTRACT_ADDRESS = '0x0000000000000000000000000000000000000000';
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CONTRACT_ABI = [
+  "function registerUser(string username,string email) external",
+  "function updateProfile(string username,string email) external",
+  "function getMyProfile() external view returns (tuple(address wallet,string username,string email,uint256 registeredAt,uint256 totalContracts,uint256 totalAlerts,bool exists,bool isPremium))",
+  "function getUserProfile(address wallet) external view returns (tuple(address wallet,string username,string email,uint256 registeredAt,uint256 totalContracts,uint256 totalAlerts,bool exists,bool isPremium))",
+  "function isRegistered(address wallet) external view returns (bool)",
+  "function registerContract(address contractAddress,string networkName,uint256 networkChainId,string name,string description) external returns (uint256)",
+  "function updateMonitoringConfig(uint256 contractId,bool watchOwnershipChanges,bool watchMinting,bool watchLargeWithdrawals,bool watchAdminOps,bool watchUpgrades,bool watchAbnormalActivity,bool watchTokenMovements,uint256 largeWithdrawalThreshold,uint256 abnormalTxThreshold) external",
+  "function deactivateContract(uint256 contractId) external",
+  "function markContractChecked(uint256 contractId) external",
+  "function getContract(uint256 contractId) external view returns (tuple(uint256 id,address contractAddress,string networkName,uint256 networkChainId,string name,string description,address addedBy,uint256 addedAt,uint256 lastCheckedAt,bool active,bool exists),tuple(bool watchOwnershipChanges,bool watchMinting,bool watchLargeWithdrawals,bool watchAdminOps,bool watchUpgrades,bool watchAbnormalActivity,bool watchTokenMovements,uint256 largeWithdrawalThreshold,uint256 abnormalTxThreshold))",
+  "function getUserContractIds(address wallet) external view returns (uint256[])",
+  "function getMyContractIds() external view returns (uint256[])",
+  "function createAlert(uint256 contractId,string alertType,string description,string txHash,uint8 severity) external returns (uint256)",
+  "function acknowledgeAlert(uint256 alertId) external",
+  "function getAlert(uint256 alertId) external view returns (tuple(uint256 id,uint256 contractId,string alertType,string description,string txHash,uint8 severity,uint256 detectedAt,bool acknowledged,address acknowledgedBy,uint256 acknowledgedAt))",
+  "function getContractAlertIds(uint256 contractId) external view returns (uint256[])",
+  "function getMyAlertIds() external view returns (uint256[])",
+  "function createReport(uint256 contractId,string reportTitle,string reportContent,uint8 severity) external returns (uint256)",
+  "function upvoteReport(uint256 reportId) external",
+  "function getReport(uint256 reportId) external view returns (tuple(uint256 id,uint256 contractId,address reportedBy,string reportTitle,string reportContent,uint8 severity,uint256 createdAt,uint256 upvotes))",
+  "function getContractReportIds(uint256 contractId) external view returns (uint256[])",
+  "function getPlatformStats() external view returns (uint256,uint256,uint256,uint256)",
+  "event ContractRegistered(uint256 indexed contractId,address indexed contractAddress,address indexed addedBy,string name,uint256 chainId,uint256 timestamp)",
+  "event AlertCreated(uint256 indexed alertId,uint256 indexed contractId,address indexed targetUser,string alertType,uint8 severity,uint256 timestamp)",
+  "event AlertAcknowledged(uint256 indexed alertId,address indexed acknowledgedBy,uint256 timestamp)",
+  "event ReportCreated(uint256 indexed reportId,uint256 indexed contractId,address indexed reportedBy,string reportTitle,uint8 severity,uint256 timestamp)"
+];
+
+/* ══════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════ */
+let provider, signer, contract, userAddress, userProfile;
+let monitoredContracts = [];   // [{contract, config}]
+let myAlerts = [];
+let myReports = [];
+let severityChart = null;
+let monitorInterval = null;
+let currentPage = 'dashboard';
+
+/* ══════════════════════════════════════════════════════
+   PARTICLES
+══════════════════════════════════════════════════════ */
+(function initParticles(){
+  const canvas=document.getElementById('particle-canvas');
+  const ctx=canvas.getContext('2d');
+  let particles=[];
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+  resize();window.addEventListener('resize',resize);
+  for(let i=0;i<60;i++)particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.5+.5,dx:(Math.random()-.5)*.3,dy:(Math.random()-.5)*.3,o:Math.random()*.5+.1});
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(0,230,118,${p.o})`;ctx.fill();
+      p.x+=p.dx;p.y+=p.dy;
+      if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;
+      if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;
+    });
+    // draw connections
+    for(let i=0;i<particles.length;i++)for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<120){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(0,230,118,${.06*(1-d/120)})`;ctx.lineWidth=.5;ctx.stroke()}
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══════════════════════════════════════════════════════
+   NAV SCROLL
+══════════════════════════════════════════════════════ */
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('scrolled',window.scrollY>50)
+});
+
+/* ══════════════════════════════════════════════════════
+   FAQ
+══════════════════════════════════════════════════════ */
+const FAQS=[
+  {q:'What is ContractWatch?',a:'ContractWatch is a decentralised smart contract security monitoring platform built on BOT Chain. It allows users to register smart contract addresses, configure monitoring rules, and store security alerts immutably on-chain.'},
+  {q:'Do I need a wallet to use ContractWatch?',a:'Yes. ContractWatch is fully on-chain. You need a MetaMask-compatible wallet connected to BOT Chain (Chain ID 677) to register your profile, add contracts, and store alerts.'},
+  {q:'How does threat detection work?',a:'The ContractWatch frontend continuously polls the BOT Chain RPC for contract events matching your configured monitoring rules. When a threat is confirmed, the alert details are stored on-chain through the ContractWatch smart contract.'},
+  {q:'Can ContractWatch monitor contracts on other networks?',a:'You can register and track contract addresses from other networks, but the ContractWatch monitoring infrastructure runs on BOT Chain. Cross-chain event data must be submitted by the user or an authorised frontend.'},
+  {q:'Are my alert records permanent?',a:'Yes. All alerts, monitoring configurations, and security reports are stored on BOT Chain smart contracts — immutable and tamper-proof.'},
+  {q:'What is BOT Chain?',a:'BOT Chain (Botchain) is an EVM-compatible blockchain with chain ID 677. Its website is botchain.ai and its block explorer is at scan.botchain.ai.'},
+  {q:'Is there a contract limit?',a:'Each wallet can monitor up to 50 smart contracts and store up to 500 alerts per contract.'},
+];
+function initFAQ(){
+  const c=document.getElementById('faq-list');
+  FAQS.forEach((f,i)=>{
+    const item=document.createElement('div');item.className='faq-item';
+    item.innerHTML=`<div class="faq-q" onclick="toggleFAQ(${i})">${f.q}<span class="faq-arrow">▼</span></div><div class="faq-a">${f.a}</div>`;
+    c.appendChild(item);
+  });
+}
+function toggleFAQ(i){
+  const items=document.querySelectorAll('.faq-item');
+  items[i].classList.toggle('open');
+}
+
+/* ══════════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════════ */
+function toast(msg,type='info',duration=4000){
+  const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+  const t=document.createElement('div');t.className=`toast ${type}`;
+  t.innerHTML=`<span class="toast-icon">${icons[type]}</span><div class="toast-msg">${msg}</div>`;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300)},duration);
+}
+
+/* ══════════════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════════════ */
+function openModal(id){document.getElementById(id).classList.remove('hidden')}
+function closeModal(id){document.getElementById(id).classList.add('hidden')}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.add('hidden')}));
+
+/* ══════════════════════════════════════════════════════
+   SCREENS
+══════════════════════════════════════════════════════ */
+function showLanding(){
+  hide(['connect-screen','register-screen','app']);show(['landing']);
+  document.getElementById('landing-nav-links').classList.remove('hidden');
+}
+function showConnectScreen(){
+  hide(['landing','register-screen','app']);show(['connect-screen']);
+  document.getElementById('landing-nav-links').classList.add('hidden');
+}
+function showRegisterScreen(){
+  hide(['landing','connect-screen','app']);show(['register-screen']);
+}
+function showApp(){
+  hide(['landing','connect-screen','register-screen']);show(['app']);
+  document.getElementById('landing-nav-links').classList.add('hidden');
+  document.getElementById('nav-disconnect-btn').classList.remove('hidden');
+  document.getElementById('nav-connect-btn').classList.add('hidden');
+}
+function show(ids){ids.forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='flex';el.classList.remove('hidden')}})}
+function hide(ids){ids.forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='none';el.classList.add('hidden')}})}
+
+/* ══════════════════════════════════════════════════════
+   WALLET
+══════════════════════════════════════════════════════ */
+async function connectWallet(){
+  if(!window.ethereum){toast('MetaMask not found. Please install it at metamask.io','error');return}
+  try{
+    await window.ethereum.request({method:'eth_requestAccounts'});
+    provider=new ethers.BrowserProvider(window.ethereum);
+    signer=await provider.getSigner();
+    userAddress=await signer.getAddress();
+
+    // switch / add BOT Chain
+    const net=await provider.getNetwork();
+    if(net.chainId!==677n){
+      try{
+        await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:BOT_CHAIN.chainId}]});
+      }catch(e){
+        if(e.code===4902||e.code===-32603){
+          await window.ethereum.request({method:'wallet_addEthereumChain',params:[BOT_CHAIN]});
+        }else throw e;
+      }
+      provider=new ethers.BrowserProvider(window.ethereum);
+      signer=await provider.getSigner();
+    }
+
+    contract=new ethers.Contract(CONTRACT_ADDRESS,CONTRACT_ABI,signer);
+
+    // Update nav
+    document.getElementById('nav-wallet-addr').textContent=shortenAddr(userAddress);
+    document.getElementById('nav-wallet-addr').classList.remove('hidden');
+
+    // Check if contract is deployed (zero address = demo mode)
+    if(CONTRACT_ADDRESS==='0x0000000000000000000000000000000000000000'){
+      toast('Running in DEMO mode — deploy ContractWatch.sol and update CONTRACT_ADDRESS to go live.','warning',8000);
+      enterDemoMode();
+      return;
+    }
+
+    // Check registration
+    const reg=await contract.isRegistered(userAddress);
+    if(!reg){showRegisterScreen();}
+    else{await loadUserData();showApp();loadDashboard();}
+
+  }catch(e){
+    console.error(e);
+    toast('Connection failed: '+errorMsg(e),'error');
+  }
+}
+
+function disconnect(){
+  provider=signer=contract=userAddress=userProfile=null;
+  monitoredContracts=[];myAlerts=[];myReports=[];
+  if(monitorInterval)clearInterval(monitorInterval);
+  document.getElementById('nav-wallet-addr').classList.add('hidden');
+  document.getElementById('nav-disconnect-btn').classList.add('hidden');
+  document.getElementById('nav-connect-btn').classList.remove('hidden');
+  showLanding();
+}
+
+/* ══════════════════════════════════════════════════════
+   REGISTRATION
+══════════════════════════════════════════════════════ */
+async function submitRegistration(){
+  const username=document.getElementById('reg-username').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  if(!username){toast('Username is required','warning');return}
+  const btn=document.getElementById('reg-btn');
+  btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Registering…';
+  try{
+    const tx=await contract.registerUser(username,email);
+    toast('Transaction submitted — waiting for confirmation…','info');
+    await tx.wait();
+    toast('Profile registered on-chain! Welcome, '+username,'success');
+    await loadUserData();showApp();loadDashboard();
+  }catch(e){toast('Registration failed: '+errorMsg(e),'error')}
+  finally{btn.disabled=false;btn.textContent='✅ Register On-Chain'}
+}
+
+/* ══════════════════════════════════════════════════════
+   LOAD DATA
+══════════════════════════════════════════════════════ */
+async function loadUserData(){
+  userProfile=await contract.getMyProfile();
+  const ids=await contract.getMyContractIds();
+  monitoredContracts=[];
+  for(const id of ids){
+    try{
+      const [c,cfg]=await contract.getContract(id);
+      if(c.active)monitoredContracts.push({contract:c,config:cfg});
+    }catch(e){}
+  }
+  const alertIds=await contract.getMyAlertIds();
+  myAlerts=[];
+  for(const aid of alertIds){
+    try{myAlerts.push(await contract.getAlert(aid))}catch(e){}
+  }
+  // Load reports for user contracts
+  myReports=[];
+  for(const mc of monitoredContracts){
+    const rids=await contract.getContractReportIds(mc.contract.id);
+    for(const rid of rids){
+      try{myReports.push(await contract.getReport(rid))}catch(e){}
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   PLATFORM STATS
+══════════════════════════════════════════════════════ */
+async function loadPlatformStats(){
+  try{
+    const [u,c,a,r]=await contract.getPlatformStats();
+    ['stat-users','ps-users'].forEach(id=>setEl(id,u.toString()));
+    ['stat-contracts','ps-contracts'].forEach(id=>setEl(id,c.toString()));
+    ['stat-alerts-hero','ps-alerts'].forEach(id=>setEl(id,a.toString()));
+    setEl('ps-reports',r.toString());
+  }catch(e){}
+}
+function setEl(id,v){const el=document.getElementById(id);if(el)el.textContent=v}
+
+/* ══════════════════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════════════════ */
+function loadDashboard(){
+  if(userProfile)setEl('dash-username',userProfile.username||shortenAddr(userAddress));
+  const total=monitoredContracts.length;
+  const active=monitoredContracts.filter(m=>m.contract.active).length;
+  const critical=myAlerts.filter(a=>Number(a.severity)===3&&!a.acknowledged).length;
+  const medium=myAlerts.filter(a=>Number(a.severity)===2&&!a.acknowledged).length;
+  setEl('d-total',total);setEl('d-active',active);
+  setEl('d-alerts',myAlerts.length);setEl('d-critical',critical);setEl('d-medium',medium);
+  renderSeverityChart();
+  renderDashContracts();
+  renderDashActivity();
+  if(CONTRACT_ADDRESS!=='0x0000000000000000000000000000000000000000')loadPlatformStats();
+  startMonitoring();
+}
+
+function renderSeverityChart(){
+  const low=myAlerts.filter(a=>Number(a.severity)===1).length;
+  const med=myAlerts.filter(a=>Number(a.severity)===2).length;
+  const crit=myAlerts.filter(a=>Number(a.severity)===3).length;
+  if(severityChart)severityChart.destroy();
+  const ctx=document.getElementById('chart-severity');
+  if(!ctx)return;
+  severityChart=new Chart(ctx,{
+    type:'doughnut',
+    data:{labels:['Low','Medium','Critical'],datasets:[{data:[low||1,med||0,crit||0],backgroundColor:['#2196f3','#ff9800','#f44336'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8aabcf',font:{size:11}}}}}
+  });
+}
+
+function renderDashContracts(){
+  const el=document.getElementById('dash-contracts-list');
+  if(!monitoredContracts.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No contracts yet</div><div class="empty-desc">Add your first contract to begin monitoring.</div></div>`;return;
+  }
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Name</th><th>Address</th><th>Network</th><th>Status</th><th>Alerts</th></tr></thead><tbody>'+
+    monitoredContracts.slice(0,5).map(m=>{
+      const acs=myAlerts.filter(a=>a.contractId===m.contract.id&&!a.acknowledged).length;
+      return `<tr onclick="showContractDetail(${m.contract.id})" style="cursor:pointer">
+        <td>${esc(m.contract.name)}</td>
+        <td><span class="truncate" style="max-width:120px;display:inline-block;font-family:monospace;font-size:.75rem">${shortenAddr(m.contract.contractAddress)}</span></td>
+        <td><span class="badge badge-blue">${esc(m.contract.networkName)}</span></td>
+        <td><span class="badge badge-green">Active</span></td>
+        <td><span class="badge ${acs>0?'badge-orange':'badge-muted'}">${acs}</span></td>
+      </tr>`;
+    }).join('')+'</tbody></table></div>';
+}
+
+function renderDashActivity(){
+  const el=document.getElementById('dash-activity-feed');
+  const recent=myAlerts.slice(-8).reverse();
+  if(!recent.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">🛡️</div><div class="empty-title">All clear</div><div class="empty-desc">No recent security events.</div></div>`;return}
+  el.innerHTML=recent.map(a=>{
+    const mc=monitoredContracts.find(m=>m.contract.id===a.contractId);
+    const name=mc?mc.contract.name:('Contract #'+a.contractId);
+    return `<div class="activity-item">
+      <div class="activity-icon" style="background:${sevColor(a.severity,'bg')}">${sevIcon(a.severity)}</div>
+      <div class="activity-info">
+        <div class="activity-title">${esc(a.alertType)}</div>
+        <div class="activity-meta">${esc(name)} · ${timeAgo(Number(a.detectedAt))}</div>
+      </div>
+      ${a.acknowledged?'<span class="badge badge-muted">ACK</span>':'<span class="badge '+sevBadge(a.severity)+'">'+ sevLabel(a.severity)+'</span>'}
+    </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════════════════
+   PAGES
+══════════════════════════════════════════════════════ */
+const PAGES=['dashboard','contracts','contract-detail','alerts','reports','profile'];
+function showPage(page){
+  currentPage=page;
+  PAGES.forEach(p=>document.getElementById('page-'+p)?.classList.add('hidden'));
+  document.getElementById('page-'+page)?.classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.page===page));
+  document.querySelectorAll('.mobile-nav-item').forEach((el,i)=>el.classList.toggle('active',['dashboard','contracts','alerts','reports','profile'][i]===page));
+  if(page==='contracts')renderContractsPage();
+  if(page==='alerts')renderAlerts();
+  if(page==='reports')renderReports();
+  if(page==='profile')renderProfile();
+}
+
+/* ── Contracts ───────────────────────────────────── */
+function renderContractsPage(){
+  const el=document.getElementById('contracts-grid');
+  if(!monitoredContracts.length){
+    el.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📋</div><div class="empty-title">No contracts monitored</div><div class="empty-desc">Click "Add Contract" to begin monitoring your first smart contract.</div></div>`;return;
+  }
+  el.innerHTML=monitoredContracts.map(m=>{
+    const acs=myAlerts.filter(a=>a.contractId===m.contract.id&&!a.acknowledged).length;
+    return `<div class="contract-card" onclick="showContractDetail(${m.contract.id})">
+      <div class="contract-card-header">
+        <div>
+          <div class="contract-name">${esc(m.contract.name)}</div>
+          <div class="contract-addr">${shortenAddr(m.contract.contractAddress)}</div>
+        </div>
+        <span class="contract-net">${esc(m.contract.networkName)}</span>
+      </div>
+      ${m.contract.description?`<div class="contract-desc">${esc(m.contract.description)}</div>`:''}
+      <div class="contract-meta">
+        <span class="badge badge-green">Active</span>
+        ${acs>0?`<span class="badge badge-orange">${acs} alerts</span>`:''}
+      </div>
+      <div class="contract-footer">
+        <span class="text-xs text-muted">Added ${timeAgo(Number(m.contract.addedAt))}</span>
+        <div class="flex gap-2" onclick="event.stopPropagation()">
+          <button class="btn btn-outline btn-sm" onclick="showContractDetail(${m.contract.id})">Details</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDeactivate(${m.contract.id})">Remove</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Contract Detail ─────────────────────────────── */
+async function showContractDetail(contractId){
+  showPage('contract-detail');
+  const el=document.getElementById('contract-detail-content');
+  el.innerHTML=`<div class="flex items-center gap-3 p-4"><div class="spinner"></div>Loading contract data…</div>`;
+  try{
+    const mc=monitoredContracts.find(m=>Number(m.contract.id)===Number(contractId));
+    if(!mc)throw new Error('Contract not found');
+    const {contract:c,config:cfg}=mc;
+    const alerts=myAlerts.filter(a=>Number(a.contractId)===Number(contractId));
+    el.innerHTML=`
+      <div class="detail-header">
+        <div class="flex justify-between items-start flex-wrap gap-3">
+          <div>
+            <div class="text-xl font-bold">${esc(c.name)}</div>
+            <div class="detail-addr mt-1">${c.contractAddress}</div>
+            ${c.description?`<div class="text-sm text-secondary mt-2" style="max-width:600px">${esc(c.description)}</div>`:''}
+          </div>
+          <div class="flex gap-2 flex-wrap">
+            <a href="https://scan.botchain.ai/address/${c.contractAddress}" target="_blank" class="btn btn-outline btn-sm">🔍 Explorer</a>
+            <button class="btn btn-danger btn-sm" onclick="confirmDeactivate(${c.id})">Remove</button>
+          </div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-field"><div class="detail-field-label">Network</div><div class="detail-field-value">${esc(c.networkName)}</div></div>
+          <div class="detail-field"><div class="detail-field-label">Chain ID</div><div class="detail-field-value">${c.networkChainId}</div></div>
+          <div class="detail-field"><div class="detail-field-label">Status</div><div class="detail-field-value text-green">Active</div></div>
+          <div class="detail-field"><div class="detail-field-label">Total Alerts</div><div class="detail-field-value">${alerts.length}</div></div>
+          <div class="detail-field"><div class="detail-field-label">Added</div><div class="detail-field-value">${formatDate(Number(c.addedAt))}</div></div>
+          <div class="detail-field"><div class="detail-field-label">Last Checked</div><div class="detail-field-value">${formatDate(Number(c.lastCheckedAt))}</div></div>
+        </div>
+      </div>
+      <div class="flex gap-4" style="flex-wrap:wrap">
+        <div style="flex:1;min-width:280px">
+          <div class="card">
+            <div class="card-title">Monitoring Rules</div>
+            <div class="toggle-row"><span class="text-sm">Ownership Changes</span>${chk(cfg.watchOwnershipChanges)}</div>
+            <div class="toggle-row"><span class="text-sm">Unexpected Minting</span>${chk(cfg.watchMinting)}</div>
+            <div class="toggle-row"><span class="text-sm">Large Withdrawals</span>${chk(cfg.watchLargeWithdrawals)}</div>
+            <div class="toggle-row"><span class="text-sm">Admin Operations</span>${chk(cfg.watchAdminOps)}</div>
+            <div class="toggle-row"><span class="text-sm">Contract Upgrades</span>${chk(cfg.watchUpgrades)}</div>
+            <div class="toggle-row"><span class="text-sm">Abnormal Activity</span>${chk(cfg.watchAbnormalActivity)}</div>
+            <div class="toggle-row"><span class="text-sm">Token Movements</span>${chk(cfg.watchTokenMovements)}</div>
+          </div>
+        </div>
+        <div style="flex:2;min-width:280px">
+          <div class="card">
+            <div class="card-title">Security Alerts (${alerts.length})</div>
+            ${alerts.length?alerts.slice().reverse().map(a=>`
+              <div class="alert-item sev-${sevLabel(a.severity).toLowerCase()} mt-2">
+                <div class="sev-dot"></div>
+                <div class="alert-info">
+                  <div class="alert-title">${esc(a.alertType)}</div>
+                  <div class="alert-desc">${esc(a.description)}</div>
+                  ${a.txHash?`<div class="alert-meta">Tx: <a href="https://scan.botchain.ai/tx/${a.txHash}" target="_blank" style="color:var(--cyan)">${shortenAddr(a.txHash)}</a></div>`:''}
+                  <div class="alert-meta">${formatDate(Number(a.detectedAt))} · ${sevLabel(a.severity)}</div>
+                </div>
+                <div class="alert-actions">
+                  ${!a.acknowledged?`<button class="btn btn-outline btn-sm" onclick="ackAlert(${a.id})">Ack</button>`:'<span class="badge badge-muted">ACK</span>'}
+                </div>
+              </div>`).join(''):`<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">No alerts</div><div class="empty-desc">No security events detected for this contract.</div></div>`}
+          </div>
+        </div>
+      </div>`;
+  }catch(e){el.innerHTML=`<div class="card"><div class="text-red">Error loading contract: ${e.message}</div></div>`}
+}
+function chk(v){return `<span class="badge ${v?'badge-green':'badge-muted'}">${v?'ON':'OFF'}</span>`}
+
+/* ── Alerts ──────────────────────────────────────── */
+function renderAlerts(){
+  const el=document.getElementById('alerts-list');
+  const sevFilter=document.getElementById('alert-filter-sev').value;
+  let alerts=[...myAlerts];
+  if(sevFilter)alerts=alerts.filter(a=>Number(a.severity)===Number(sevFilter));
+  alerts.reverse();
+  if(!alerts.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">🛡️</div><div class="empty-title">No alerts found</div><div class="empty-desc">No security alerts match your current filter.</div></div>`;return}
+  el.innerHTML=alerts.map(a=>{
+    const mc=monitoredContracts.find(m=>Number(m.contract.id)===Number(a.contractId));
+    const cname=mc?mc.contract.name:('Contract #'+a.contractId);
+    return `<div class="alert-item sev-${sevLabel(a.severity).toLowerCase()}" style="margin-bottom:.5rem">
+      <div class="sev-dot"></div>
+      <div class="alert-info">
+        <div class="alert-title">${esc(a.alertType)}</div>
+        <div class="alert-desc">${esc(a.description)}</div>
+        <div class="alert-meta">${esc(cname)} · ${formatDate(Number(a.detectedAt))}</div>
+        ${a.txHash?`<div class="alert-meta">Tx: <a href="https://scan.botchain.ai/tx/${a.txHash}" target="_blank" style="color:var(--cyan)">${a.txHash.slice(0,20)}…</a></div>`:''}
+      </div>
+      <div class="alert-actions flex-col items-center gap-1">
+        <span class="badge ${sevBadge(a.severity)}">${sevLabel(a.severity)}</span>
+        ${!a.acknowledged?`<button class="btn btn-outline btn-sm" onclick="ackAlert(${a.id})">Ack</button>`:'<span class="badge badge-muted text-xs">Resolved</span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Reports ─────────────────────────────────────── */
+function renderReports(){
+  const el=document.getElementById('reports-list');
+  if(!myReports.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-title">No reports yet</div><div class="empty-desc">Be the first to submit a security report for your monitored contracts.</div></div>`;return}
+  el.innerHTML=myReports.slice().reverse().map(r=>{
+    const mc=monitoredContracts.find(m=>Number(m.contract.id)===Number(r.contractId));
+    const cname=mc?mc.contract.name:('Contract #'+r.contractId);
+    return `<div class="card card-hover" style="margin-bottom:.75rem">
+      <div class="flex justify-between items-start">
+        <div>
+          <div class="font-semibold">${esc(r.reportTitle)}</div>
+          <div class="text-xs text-muted mt-1">${esc(cname)} · ${formatDate(Number(r.createdAt))}</div>
+        </div>
+        <div class="flex gap-2 items-center">
+          <span class="badge ${sevBadge(r.severity)}">${sevLabel(r.severity)}</span>
+          <button class="btn btn-outline btn-sm" onclick="upvoteReport(${r.id})">👍 ${r.upvotes}</button>
+        </div>
+      </div>
+      <div class="text-sm text-secondary mt-2" style="line-height:1.6">${esc(r.reportContent)}</div>
+      <div class="text-xs text-muted mt-2">By: ${shortenAddr(r.reportedBy)}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Profile ─────────────────────────────────────── */
+function renderProfile(){
+  const el=document.getElementById('profile-content');
+  if(!userProfile||!userProfile.exists){el.innerHTML='<div class="text-muted text-sm">No profile loaded.</div>';return}
+  el.innerHTML=`
+    <div class="detail-grid mt-2">
+      <div class="detail-field"><div class="detail-field-label">Username</div><div class="detail-field-value">${esc(userProfile.username)}</div></div>
+      <div class="detail-field"><div class="detail-field-label">Wallet</div><div class="detail-field-value" style="font-family:monospace;font-size:.78rem">${shortenAddr(String(userProfile.wallet))}</div></div>
+      <div class="detail-field"><div class="detail-field-label">Email</div><div class="detail-field-value">${esc(userProfile.email)||'—'}</div></div>
+      <div class="detail-field"><div class="detail-field-label">Plan</div><div class="detail-field-value ${userProfile.isPremium?'text-green':''}">${userProfile.isPremium?'Premium':'Free'}</div></div>
+      <div class="detail-field"><div class="detail-field-label">Registered</div><div class="detail-field-value">${formatDate(Number(userProfile.registeredAt))}</div></div>
+      <div class="detail-field"><div class="detail-field-label">Total Alerts</div><div class="detail-field-value">${Number(userProfile.totalAlerts)}</div></div>
+    </div>
+    <div class="mt-4 flex gap-3 flex-wrap">
+      <button class="btn btn-secondary btn-sm" onclick="openEditProfile()">✏️ Edit Profile</button>
+      <button class="btn btn-danger btn-sm" onclick="disconnect()">Disconnect Wallet</button>
+    </div>`;
+}
+
+function openEditProfile(){
+  document.getElementById('reg-username').value=userProfile?.username||'';
+  document.getElementById('reg-email').value=userProfile?.email||'';
+  document.getElementById('reg-btn').textContent='Update Profile';
+  document.getElementById('reg-btn').onclick=updateProfile;
+  showRegisterScreen();
+}
+
+async function updateProfile(){
+  const username=document.getElementById('reg-username').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  if(!username){toast('Username required','warning');return}
+  const btn=document.getElementById('reg-btn');btn.disabled=true;btn.innerHTML='<div class="spinner"></div>';
+  try{
+    const tx=await contract.updateProfile(username,email);
+    await tx.wait();
+    toast('Profile updated!','success');
+    await loadUserData();showApp();showPage('profile');
+  }catch(e){toast('Update failed: '+errorMsg(e),'error')}
+  finally{btn.disabled=false;btn.textContent='Update Profile';btn.onclick=updateProfile}
+}
+
+/* ══════════════════════════════════════════════════════
+   ADD CONTRACT
+══════════════════════════════════════════════════════ */
+function openAddContractModal(){openModal('modal-add-contract')}
+
+async function submitAddContract(){
+  const address=document.getElementById('ac-address').value.trim();
+  const name=document.getElementById('ac-name').value.trim();
+  const descEl=document.getElementById('ac-desc');
+  const networkVal=document.getElementById('ac-network').value;
+  const [netName,netChainId]=networkVal.split('|');
+
+  if(!ethers.isAddress(address)){toast('Invalid contract address','warning');return}
+  if(!name){toast('Contract name is required','warning');return}
+
+  const btn=document.getElementById('ac-submit-btn');
+  btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Registering…';
+  try{
+    const tx=await contract.registerContract(address,netName,BigInt(netChainId),name,descEl.value.trim());
+    toast('Transaction submitted…','info');
+    const receipt=await tx.wait();
+    // Parse the contractId from events
+    let newId=null;
+    for(const log of receipt.logs){
+      try{
+        const parsed=contract.interface.parseLog(log);
+        if(parsed?.name==='ContractRegistered')newId=parsed.args[0];
+      }catch(e){}
+    }
+    toast('Contract registered on-chain!','success');
+    closeModal('modal-add-contract');
+
+    // Update monitoring config
+    if(newId!==null){
+      const cfgTx=await contract.updateMonitoringConfig(
+        newId,
+        document.getElementById('mr-ownership').checked,
+        document.getElementById('mr-minting').checked,
+        document.getElementById('mr-withdraw').checked,
+        document.getElementById('mr-admin').checked,
+        document.getElementById('mr-upgrade').checked,
+        document.getElementById('mr-abnormal').checked,
+        document.getElementById('mr-token').checked,
+        ethers.parseEther('1'),100n
+      );
+      await cfgTx.wait();
+    }
+    await loadUserData();loadDashboard();renderContractsPage();
+  }catch(e){toast('Failed: '+errorMsg(e),'error')}
+  finally{btn.disabled=false;btn.textContent='Register Contract'}
+}
+
+/* ══════════════════════════════════════════════════════
+   DEACTIVATE
+══════════════════════════════════════════════════════ */
+function confirmDeactivate(contractId){
+  const mc=monitoredContracts.find(m=>Number(m.contract.id)===Number(contractId));
+  document.getElementById('confirm-title').textContent='Remove Contract';
+  document.getElementById('confirm-msg').textContent=`Are you sure you want to stop monitoring "${mc?.contract.name||'this contract'}"? This action will deactivate monitoring on-chain.`;
+  document.getElementById('confirm-ok-btn').onclick=()=>deactivateContract(contractId);
+  openModal('modal-confirm');
+}
+async function deactivateContract(contractId){
+  closeModal('modal-confirm');
+  try{
+    const tx=await contract.deactivateContract(contractId);
+    toast('Deactivating…','info');
+    await tx.wait();
+    toast('Contract removed from monitoring.','success');
+    await loadUserData();loadDashboard();renderContractsPage();
+    if(currentPage==='contract-detail')showPage('contracts');
+  }catch(e){toast('Failed: '+errorMsg(e),'error')}
+}
+
+/* ══════════════════════════════════════════════════════
+   ALERTS — ACK
+══════════════════════════════════════════════════════ */
+async function ackAlert(alertId){
+  try{
+    const tx=await contract.acknowledgeAlert(alertId);
+    toast('Acknowledging alert…','info');
+    await tx.wait();
+    toast('Alert acknowledged','success');
+    await loadUserData();loadDashboard();
+    if(currentPage==='alerts')renderAlerts();
+    if(currentPage==='contract-detail')showContractDetail(myAlerts.find(a=>Number(a.id)===Number(alertId))?.contractId);
+  }catch(e){toast('Failed: '+errorMsg(e),'error')}
+}
+
+/* ══════════════════════════════════════════════════════
+   REPORTS
+══════════════════════════════════════════════════════ */
+function openReportModal(){
+  const sel=document.getElementById('rp-contract');
+  sel.innerHTML='<option value="">Select a contract…</option>'+
+    monitoredContracts.map(m=>`<option value="${m.contract.id}">${esc(m.contract.name)}</option>`).join('');
+  openModal('modal-report');
+}
+async function submitReport(){
+  const cid=document.getElementById('rp-contract').value;
+  const title=document.getElementById('rp-title').value.trim();
+  const sev=parseInt(document.getElementById('rp-sev').value);
+  const content=document.getElementById('rp-content').value.trim();
+  if(!cid){toast('Select a contract','warning');return}
+  if(!title){toast('Title required','warning');return}
+  if(!content){toast('Content required','warning');return}
+  const btn=document.getElementById('rp-submit-btn');btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Submitting…';
+  try{
+    const tx=await contract.createReport(BigInt(cid),title,content,sev);
+    toast('Submitting report on-chain…','info');
+    await tx.wait();
+    toast('Security report stored on-chain!','success');
+    closeModal('modal-report');
+    await loadUserData();renderReports();
+  }catch(e){toast('Failed: '+errorMsg(e),'error')}
+  finally{btn.disabled=false;btn.textContent='Submit On-Chain'}
+}
+async function upvoteReport(reportId){
+  try{
+    const tx=await contract.upvoteReport(reportId);
+    await tx.wait();
+    toast('Report upvoted!','success');
+    await loadUserData();renderReports();
+  }catch(e){toast('Failed: '+errorMsg(e),'error')}
+}
+
+/* ══════════════════════════════════════════════════════
+   MONITORING ENGINE
+   Polls BOT Chain RPC for contract events using ethers.js
+══════════════════════════════════════════════════════ */
+async function startMonitoring(){
+  if(monitorInterval)clearInterval(monitorInterval);
+  if(!monitoredContracts.length)return;
+  document.getElementById('monitor-pulse').classList.remove('hidden');
+  document.getElementById('monitor-status').style.display='flex';
+
+  // Known event topic hashes for common patterns
+  const OWNERSHIP_TOPICS=[
+    ethers.id('OwnershipTransferred(address,address)'),
+    ethers.id('AdminChanged(address,address)'),
+    ethers.id('RoleGranted(bytes32,address,address)'),
+    ethers.id('RoleRevoked(bytes32,address,address)')
+  ];
+  const UPGRADE_TOPICS=[
+    ethers.id('Upgraded(address)'),
+    ethers.id('BeaconUpgraded(address)')
+  ];
+  const TRANSFER_TOPICS=[ethers.id('Transfer(address,address,uint256)')];
+  const MINTING_TOPIC=ethers.id('Transfer(address,address,uint256)');
+  const WITHDRAWAL_TOPICS=[
+    ethers.id('Withdrawal(address,uint256)'),
+    ethers.id('Withdrawn(address,uint256)')
+  ];
+
+  async function checkContract(mc){
+    try{
+      const prov=new ethers.BrowserProvider(window.ethereum);
+      const latestBlock=await prov.getBlockNumber();
+      const fromBlock=Math.max(latestBlock-50,0); // last ~50 blocks
+      const cfg=mc.config;
+
+      // ── Ownership / Admin changes
+      if(cfg.watchOwnershipChanges||cfg.watchAdminOps){
+        for(const topic of OWNERSHIP_TOPICS){
+          const logs=await prov.getLogs({address:mc.contract.contractAddress,topics:[topic],fromBlock,toBlock:'latest'});
+          for(const log of logs){
+            const aType=topic===OWNERSHIP_TOPICS[0]?'Ownership Transfer':
+              topic===OWNERSHIP_TOPICS[1]?'Admin Changed':
+              topic===OWNERSHIP_TOPICS[2]?'Role Granted':'Role Revoked';
+            await recordAlert(mc.contract.id,aType,`${aType} detected on ${mc.contract.name}`,log.transactionHash,3);
+          }
+        }
+      }
+
+      // ── Upgrades
+      if(cfg.watchUpgrades){
+        for(const topic of UPGRADE_TOPICS){
+          const logs=await prov.getLogs({address:mc.contract.contractAddress,topics:[topic],fromBlock,toBlock:'latest'});
+          for(const log of logs){
+            await recordAlert(mc.contract.id,'Contract Upgraded',`Contract upgrade detected on ${mc.contract.name} — verify legitimacy`,log.transactionHash,3);
+          }
+        }
+      }
+
+      // ── Minting (Transfer from zero address)
+      if(cfg.watchMinting){
+        const logs=await prov.getLogs({address:mc.contract.contractAddress,topics:[MINTING_TOPIC],fromBlock,toBlock:'latest'});
+        for(const log of logs){
+          if(log.topics[1]==='0x0000000000000000000000000000000000000000000000000000000000000000'){
+            await recordAlert(mc.contract.id,'Unexpected Minting',`New tokens minted on ${mc.contract.name}`,log.transactionHash,2);
+          }
+        }
+      }
+
+      // ── Large transfers
+      if(cfg.watchTokenMovements||cfg.watchLargeWithdrawals){
+        const logs=await prov.getLogs({address:mc.contract.contractAddress,topics:[TRANSFER_TOPICS[0]],fromBlock,toBlock:'latest'});
+        for(const log of logs){
+          if(log.data&&log.data!=='0x'){
+            try{
+              const amount=BigInt(log.data);
+              if(amount>=cfg.largeWithdrawalThreshold){
+                await recordAlert(mc.contract.id,'Large Token Transfer',`Large transfer of ${ethers.formatEther(amount)} tokens detected on ${mc.contract.name}`,log.transactionHash,2);
+              }
+            }catch(e){}
+          }
+        }
+      }
+
+      // ── Withdrawals
+      if(cfg.watchLargeWithdrawals){
+        for(const topic of WITHDRAWAL_TOPICS){
+          const logs=await prov.getLogs({address:mc.contract.contractAddress,topics:[topic],fromBlock,toBlock:'latest'});
+          for(const log of logs){
+            await recordAlert(mc.contract.id,'Large Withdrawal',`Withdrawal event detected on ${mc.contract.name}`,log.transactionHash,2);
+          }
+        }
+      }
+
+      // Mark as checked
+      if(CONTRACT_ADDRESS!=='0x0000000000000000000000000000000000000000'){
+        try{await contract.markContractChecked(mc.contract.id)}catch(e){}
+      }
+    }catch(e){console.warn('Monitor error for contract',mc.contract.id,e)}
+  }
+
+  // Track already-processed tx hashes to avoid duplicates
+  const processed=new Set();
+  async function recordAlert(contractId,alertType,desc,txHash,severity){
+    const key=`${contractId}:${txHash}:${alertType}`;
+    if(processed.has(key))return;
+    processed.add(key);
+    // Check not already in myAlerts
+    if(myAlerts.some(a=>a.txHash===txHash&&a.alertType===alertType))return;
+    if(CONTRACT_ADDRESS!=='0x0000000000000000000000000000000000000000'){
+      try{
+        const tx=await contract.createAlert(contractId,alertType,desc,txHash||'',severity);
+        await tx.wait();
+        await loadUserData();loadDashboard();
+        if(currentPage==='alerts')renderAlerts();
+        toast(`⚠️ Alert: ${alertType} on contract #${contractId}`,'warning');
+      }catch(e){console.warn('createAlert error',e)}
+    }else{
+      // Demo mode: add locally
+      myAlerts.push({id:BigInt(myAlerts.length+1),contractId:BigInt(contractId),alertType,description:desc,txHash:txHash||'',severity:BigInt(severity),detectedAt:BigInt(Math.floor(Date.now()/1000)),acknowledged:false,acknowledgedBy:'0x',acknowledgedAt:0n});
+      loadDashboard();
+      if(currentPage==='alerts')renderAlerts();
+      toast(`⚠️ Alert: ${alertType}`,'warning');
+    }
+  }
+
+  // Run immediately, then every 60s
+  for(const mc of monitoredContracts)checkContract(mc);
+  monitorInterval=setInterval(async()=>{
+    for(const mc of monitoredContracts)await checkContract(mc);
+  },60000);
+}
+
+/* ══════════════════════════════════════════════════════
+   DEMO MODE
+══════════════════════════════════════════════════════ */
+function enterDemoMode(){
+  userAddress='0xDe4dBEEf0000000000000000000000000000DEAD';
+  userProfile={wallet:userAddress,username:'DemoUser',email:'demo@contractwatch.io',registeredAt:BigInt(Math.floor(Date.now()/1000)-86400*30),totalContracts:3n,totalAlerts:5n,exists:true,isPremium:false};
+  monitoredContracts=[
+    {contract:{id:1n,contractAddress:'0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',networkName:'BOT Chain',networkChainId:677n,name:'USDC Token',description:'USD Coin stablecoin contract on BOT Chain',addedBy:userAddress,addedAt:BigInt(Math.floor(Date.now()/1000)-86400*7),lastCheckedAt:BigInt(Math.floor(Date.now()/1000)-120),active:true,exists:true},config:{watchOwnershipChanges:true,watchMinting:true,watchLargeWithdrawals:true,watchAdminOps:true,watchUpgrades:true,watchAbnormalActivity:true,watchTokenMovements:true,largeWithdrawalThreshold:ethers.parseEther('1'),abnormalTxThreshold:100n}},
+    {contract:{id:2n,contractAddress:'0xdAC17F958D2ee523a2206206994597C13D831ec7',networkName:'BOT Chain',networkChainId:677n,name:'USDT Contract',description:'Tether USD token contract',addedBy:userAddress,addedAt:BigInt(Math.floor(Date.now()/1000)-86400*3),lastCheckedAt:BigInt(Math.floor(Date.now()/1000)-300),active:true,exists:true},config:{watchOwnershipChanges:true,watchMinting:false,watchLargeWithdrawals:true,watchAdminOps:true,watchUpgrades:true,watchAbnormalActivity:true,watchTokenMovements:true,largeWithdrawalThreshold:ethers.parseEther('1'),abnormalTxThreshold:100n}},
+    {contract:{id:3n,contractAddress:'0x6B175474E89094C44Da98b954EedeAC495271d0F',networkName:'Ethereum',networkChainId:1n,name:'DAI Stablecoin',description:'MakerDAO DAI decentralised stablecoin',addedBy:userAddress,addedAt:BigInt(Math.floor(Date.now()/1000)-86400*1),lastCheckedAt:BigInt(Math.floor(Date.now()/1000)-60),active:true,exists:true},config:{watchOwnershipChanges:true,watchMinting:true,watchLargeWithdrawals:true,watchAdminOps:true,watchUpgrades:false,watchAbnormalActivity:true,watchTokenMovements:true,largeWithdrawalThreshold:ethers.parseEther('1'),abnormalTxThreshold:100n}}
+  ];
+  myAlerts=[
+    {id:1n,contractId:1n,alertType:'Ownership Transfer',description:'OwnershipTransferred event detected on USDC Token — verify legitimacy.',txHash:'0xabc123def456abc123def456abc123def456abc123def456abc123def456abc1',severity:3n,detectedAt:BigInt(Math.floor(Date.now()/1000)-3600),acknowledged:false,acknowledgedBy:'0x',acknowledgedAt:0n},
+    {id:2n,contractId:1n,alertType:'Large Token Transfer',description:'Transfer of 1,500,000 USDC detected — large movement flag triggered.',txHash:'0xdef456abc789def456abc789def456abc789def456abc789def456abc789def4',severity:2n,detectedAt:BigInt(Math.floor(Date.now()/1000)-7200),acknowledged:false,acknowledgedBy:'0x',acknowledgedAt:0n},
+    {id:3n,contractId:2n,alertType:'Admin Changed',description:'AdminChanged event emitted on USDT Contract — new proxy admin assigned.',txHash:'0x789abc123456789abc123456789abc123456789abc123456789abc123456789a',severity:3n,detectedAt:BigInt(Math.floor(Date.now()/1000)-14400),acknowledged:true,acknowledgedBy:userAddress,acknowledgedAt:BigInt(Math.floor(Date.now()/1000)-13000)},
+    {id:4n,contractId:3n,alertType:'Unexpected Minting',description:'Tokens minted from zero address on DAI Stablecoin — verify authorisation.',txHash:'0x321fed654cba321fed654cba321fed654cba321fed654cba321fed654cba321f',severity:2n,detectedAt:BigInt(Math.floor(Date.now()/1000)-21600),acknowledged:false,acknowledgedBy:'0x',acknowledgedAt:0n},
+    {id:5n,contractId:1n,alertType:'Unusual Token Movement',description:'Abnormal token movement pattern detected — 50 large transfers in last 100 blocks.',txHash:'0xfed321abc654fed321abc654fed321abc654fed321abc654fed321abc654fed3',severity:1n,detectedAt:BigInt(Math.floor(Date.now()/1000)-86400),acknowledged:false,acknowledgedBy:'0x',acknowledgedAt:0n}
+  ];
+  myReports=[
+    {id:1n,contractId:1n,reportedBy:'0xAbCdEf1234567890AbCdEf1234567890AbCdEf12',reportTitle:'Potential Reentrancy in Withdrawal Function',reportContent:'Analysis of the contract bytecode reveals a pattern consistent with a reentrancy vulnerability in the withdraw() function. The state update occurs after the external call, allowing a malicious contract to re-enter before the balance is zeroed.',severity:3n,createdAt:BigInt(Math.floor(Date.now()/1000)-43200),upvotes:7n}
+  ];
+  document.getElementById('nav-wallet-addr').textContent=shortenAddr(userAddress);
+  document.getElementById('nav-wallet-addr').classList.remove('hidden');
+  setEl('stat-users','1,247');setEl('stat-contracts','3,891');setEl('stat-alerts-hero','12,540');
+  setEl('ps-users','1,247');setEl('ps-contracts','3,891');setEl('ps-alerts','12,540');setEl('ps-reports','487');
+  showApp();loadDashboard();
+}
+
+/* ══════════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════════ */
+function shortenAddr(addr){return addr?addr.slice(0,6)+'…'+addr.slice(-4):''};
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function errorMsg(e){return e?.reason||e?.data?.message||e?.message||'Unknown error'}
+function formatDate(ts){return ts?new Date(ts*1000).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—'}
+function timeAgo(ts){
+  if(!ts)return '—';
+  const diff=Date.now()/1000-ts;
+  if(diff<60)return 'just now';
+  if(diff<3600)return Math.floor(diff/60)+'m ago';
+  if(diff<86400)return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
+}
+function sevLabel(s){const n=Number(s);return n===3?'Critical':n===2?'Medium':'Low'}
+function sevBadge(s){const n=Number(s);return n===3?'badge-red':n===2?'badge-orange':'badge-blue'}
+function sevIcon(s){const n=Number(s);return n===3?'🔴':n===2?'🟠':'🔵'}
+function sevColor(s,mode){
+  const n=Number(s);
+  if(mode==='bg')return n===3?'rgba(244,67,54,.15)':n===2?'rgba(255,152,0,.15)':'rgba(33,150,243,.15)';
+  return n===3?'var(--red)':n===2?'var(--orange)':'var(--blue)';
+}
+
+/* ══════════════════════════════════════════════════════
+   WHITEPAPER DOWNLOAD
+══════════════════════════════════════════════════════ */
+function downloadWhitepaper(e){
+  e.preventDefault();
+  toast('Whitepaper PDF download starting…','info');
+  setTimeout(()=>{
+    const link=document.createElement('a');
+    link.href='ContractWatch_Whitepaper.pdf';
+    link.download='ContractWatch_Whitepaper.pdf';
+    link.click();
+  },500);
+}
+
+/* ══════════════════════════════════════════════════════
+   ANIMATE HERO COUNTERS
+══════════════════════════════════════════════════════ */
+function animateCounter(id,target,duration=1500){
+  const el=document.getElementById(id);if(!el)return;
+  const start=Date.now();
+  const t=parseInt(target)||0;
+  function step(){
+    const progress=Math.min((Date.now()-start)/duration,1);
+    const val=Math.floor(progress*t);
+    el.textContent=val.toLocaleString();
+    if(progress<1)requestAnimationFrame(step);
+  }
+  step();
+}
+
+/* ══════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════ */
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.getElementById('loading-overlay').classList.add('hidden');
+    // Animate hero counters with placeholder values until real data loads
+    animateCounter('stat-users',1247);
+    animateCounter('stat-contracts',3891);
+    animateCounter('stat-alerts-hero',12540);
+    // Load platform stats if provider available
+    if(window.ethereum){
+      try{
+        const p=new ethers.BrowserProvider(window.ethereum);
+        const c=new ethers.Contract(CONTRACT_ADDRESS,CONTRACT_ABI,p);
+        c.getPlatformStats().then(([u,ct,a])=>{
+          animateCounter('stat-users',Number(u));
+          animateCounter('stat-contracts',Number(ct));
+          animateCounter('stat-alerts-hero',Number(a));
+        }).catch(()=>{});
+      }catch(e){}
+    }
+  },1800);
+  initFAQ();
+  // Check if previously connected
+  if(window.ethereum&&window.ethereum.selectedAddress){
+    // Don't auto-connect — wait for user action
+  }
+});
+
+// Handle account / chain changes
+if(window.ethereum){
+  window.ethereum.on('accountsChanged',()=>disconnect());
+  window.ethereum.on('chainChanged',()=>window.location.reload());
+}
+</script>
+</body>
+</html>
