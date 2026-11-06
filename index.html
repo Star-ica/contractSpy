@@ -96,7 +96,7 @@ input,select,textarea{font-family:inherit}
 /* ══════════════════════════════════════════════════════
    BUTTONS
 ══════════════════════════════════════════════════════ */
-.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.4rem;border-radius:var(--radius);font-size:.9rem;font-weight:600;transition:var(--transition);white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.4rem;border-radius:var(--radius);font-size:.9rem;font-weight:600;transition:var(--transition);white-space:nowrap;justify-content:center}
 .btn-primary{background:linear-gradient(135deg,var(--green),var(--cyan));color:#000}
 .btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 0 20px var(--green-glow)}
 .btn-secondary{background:transparent;border:1px solid var(--green);color:var(--green)}
@@ -110,6 +110,7 @@ input,select,textarea{font-family:inherit}
 .btn-sm{padding:.4rem .9rem;font-size:.8rem}
 .btn-lg{padding:.85rem 2rem;font-size:1rem}
 .btn-icon{width:36px;height:36px;padding:0;justify-content:center;border-radius:50%}
+.btn:disabled{opacity:.5;pointer-events:none}
 
 /* ── Spinners / Loading ───────────────────────────── */
 .spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite}
@@ -140,7 +141,7 @@ input,select,textarea{font-family:inherit}
 .badge-muted{background:var(--bg2);color:var(--text-muted);border:1px solid var(--border)}
 
 /* ── Severity indicator ───────────────────────────── */
-.sev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:.35rem}
 .sev-low .sev-dot{background:var(--blue)}
 .sev-medium .sev-dot{background:var(--orange)}
 .sev-critical .sev-dot{background:var(--red);box-shadow:0 0 6px var(--red)}
@@ -150,6 +151,7 @@ input,select,textarea{font-family:inherit}
 ══════════════════════════════════════════════════════ */
 .form-group{display:flex;flex-direction:column;gap:.35rem}
 .form-label{font-size:.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em}
+.form-hint{font-size:.72rem;color:var(--text-muted)}
 .form-input{background:var(--bg2);border:1px solid var(--border);color:var(--text-primary);padding:.65rem .9rem;border-radius:var(--radius);font-size:.9rem;width:100%;transition:var(--transition)}
 .form-input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 2px var(--green-glow)}
 .form-input::placeholder{color:var(--text-muted)}
@@ -195,7 +197,7 @@ tr:hover td{background:var(--bg3)}
 /* ══════════════════════════════════════════════════════
    TOAST / NOTIFICATIONS
 ══════════════════════════════════════════════════════ */
-#toast-container{position:fixed;top:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;width:320px}
+#toast-container{position:fixed;top:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;width:320px;max-width:calc(100vw - 2rem)}
 .toast{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:.8rem 1.1rem;font-size:.85rem;display:flex;align-items:flex-start;gap:.6rem;animation:toastIn .2s ease;box-shadow:var(--shadow)}
 .toast.success{border-left:3px solid var(--green)}
 .toast.error{border-left:3px solid var(--red)}
@@ -203,15 +205,15 @@ tr:hover td{background:var(--bg3)}
 .toast.warning{border-left:3px solid var(--orange)}
 @keyframes toastIn{from{opacity:0;transform:translateX(20px)}}
 .toast-icon{font-size:1rem;flex-shrink:0;margin-top:.05rem}
-.toast-msg{line-height:1.4;color:var(--text-primary)}
+.toast-msg{line-height:1.4;color:var(--text-primary);word-break:break-word}
 
 /* ══════════════════════════════════════════════════════
    NAV
 ══════════════════════════════════════════════════════ */
 #nav{position:fixed;top:0;width:100%;z-index:200;border-bottom:1px solid transparent;transition:var(--transition)}
-#nav.scrolled{background:rgba(5,10,18,.95);backdrop-filter:blur(10px);border-color:var(--border)}
+#nav.scrolled,#nav.solid{background:rgba(5,10,18,.95);backdrop-filter:blur(10px);border-color:var(--border)}
 .nav-inner{max-width:1200px;margin:0 auto;padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
-.nav-logo{display:flex;align-items:center;gap:.7rem;font-size:1.1rem;font-weight:800}
+.nav-logo{display:flex;align-items:center;gap:.7rem;font-size:1.1rem;font-weight:800;cursor:pointer}
 .nav-logo svg{width:32px;height:32px}
 .nav-links{display:flex;align-items:center;gap:1.8rem}
 .nav-links a{font-size:.88rem;font-weight:500;color:var(--text-secondary);transition:var(--transition)}
@@ -240,6 +242,8 @@ tr:hover td{background:var(--bg3)}
 .hero-stat-value{font-size:1.8rem;font-weight:800;color:var(--green)}
 .hero-stat-label{font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em}
 .hero-glow{position:absolute;top:50%;left:50%;width:600px;height:600px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(0,230,118,.06) 0%,transparent 70%);pointer-events:none}
+.hero-contract{margin-top:1.5rem;font-size:.78rem;color:var(--text-muted)}
+.hero-contract a{font-family:monospace;color:var(--text-secondary);border-bottom:1px dotted var(--text-muted)}
 
 /* ── Section common ───────────────────────────────── */
 .section{padding:5rem 1.5rem;position:relative;z-index:1}
@@ -298,7 +302,7 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
 @media(max-width:500px){.footer-grid{grid-template-columns:1fr}}
 .footer-brand{display:flex;align-items:center;gap:.7rem;font-size:1rem;font-weight:800;margin-bottom:.8rem}
 .footer-desc{font-size:.83rem;color:var(--text-muted);line-height:1.6}
-.footer-col-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-secondary);margin-bottom.8rem;margin-bottom:.8rem}
+.footer-col-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-secondary);margin-bottom:.8rem}
 .footer-links{display:flex;flex-direction:column;gap:.5rem}
 .footer-links a{font-size:.83rem;color:var(--text-muted);transition:var(--transition)}
 .footer-links a:hover{color:var(--green)}
@@ -308,7 +312,7 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
 /* ══════════════════════════════════════════════════════
    APP (Dashboard)
 ══════════════════════════════════════════════════════ */
-#app{display:none;min-height:100vh;padding-top:60px}
+#app{display:none;min-height:100vh;padding-top:60px;position:relative;z-index:1}
 .app-layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 60px)}
 @media(max-width:900px){.app-layout{grid-template-columns:1fr}}
 
@@ -320,11 +324,12 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
 .nav-item:hover{background:var(--bg2);color:var(--text-primary)}
 .nav-item.active{background:var(--green-glow);color:var(--green);font-weight:600;border-left:2px solid var(--green)}
 .nav-item-icon{width:18px;text-align:center;flex-shrink:0}
+.nav-count{margin-left:auto;background:var(--orange);color:#000;font-size:.68rem;font-weight:700;border-radius:10px;padding:0 .45rem}
 .sidebar-footer{margin-top:auto;padding-top:1rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--text-muted)}
 
 /* ── Main content ─────────────────────────────────── */
-.main-content{padding:1.5rem;overflow-y:auto}
-.page-header{margin-bottom:1.5rem}
+.main-content{padding:1.5rem;overflow-y:auto;min-width:0}
+.page-header{margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap}
 .page-title{font-size:1.4rem;font-weight:800}
 .page-sub{font-size:.85rem;color:var(--text-secondary);margin-top:.2rem}
 
@@ -335,16 +340,16 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
 .contracts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
 .contract-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.2rem;transition:var(--transition);cursor:pointer}
 .contract-card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:var(--shadow)}
-.contract-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem}
+.contract-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem;gap:.5rem}
 .contract-name{font-weight:700;font-size:.95rem}
 .contract-addr{font-family:monospace;font-size:.75rem;color:var(--text-muted);margin-top:.2rem}
-.contract-net{font-size:.72rem;background:var(--blue-glow);border:1px solid rgba(33,150,243,.2);color:var(--blue);padding:.2rem .6rem;border-radius:12px}
+.contract-net{font-size:.72rem;background:var(--blue-glow);border:1px solid rgba(33,150,243,.2);color:var(--blue);padding:.2rem .6rem;border-radius:12px;white-space:nowrap}
 .contract-desc{font-size:.82rem;color:var(--text-secondary);margin:.6rem 0;line-height:1.5}
 .contract-meta{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
 .contract-footer{display:flex;justify-content:space-between;align-items:center;margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--border)}
 
 /* ── Activity feed ────────────────────────────────── */
-.activity-item{display:flex;gap.75rem;gap:.75rem;padding:.85rem;border-bottom:1px solid var(--border);align-items:flex-start}
+.activity-item{display:flex;gap:.75rem;padding:.85rem;border-bottom:1px solid var(--border);align-items:flex-start}
 .activity-item:last-child{border-bottom:none}
 .activity-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
 .activity-info{flex:1;min-width:0}
@@ -355,9 +360,10 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
 .alert-item{display:flex;gap:.75rem;align-items:flex-start;padding:.9rem;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);transition:var(--transition)}
 .alert-item:hover{border-color:var(--border2)}
 .alert-item+.alert-item{margin-top:.5rem}
+.alert-item.pending{border-color:rgba(255,152,0,.4);background:rgba(255,152,0,.04)}
 .alert-info{flex:1;min-width:0}
 .alert-title{font-size:.87rem;font-weight:600}
-.alert-desc{font-size:.78rem;color:var(--text-secondary);margin-top:.2rem;line-height:1.5}
+.alert-desc{font-size:.78rem;color:var(--text-secondary);margin-top:.2rem;line-height:1.5;word-break:break-word}
 .alert-meta{font-size:.73rem;color:var(--text-muted);margin-top:.3rem}
 .alert-actions{display:flex;gap:.4rem;flex-shrink:0}
 
@@ -395,7 +401,7 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
 .detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1rem}
 .detail-field{background:var(--bg2);border-radius:var(--radius);padding:.7rem .9rem}
 .detail-field-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.2rem}
-.detail-field-value{font-size:.88rem;font-weight:600}
+.detail-field-value{font-size:.88rem;font-weight:600;word-break:break-word}
 
 /* ── Mobile bottom nav ────────────────────────────── */
 @media(max-width:900px){
@@ -462,7 +468,7 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
 ═══════════════════════════════════════ -->
 <nav id="nav">
   <div class="nav-inner">
-    <div class="nav-logo">
+    <div class="nav-logo" onclick="if(!userAddress)showLanding()">
       <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="16" cy="16" r="15" stroke="#00e676" stroke-width="1.5"/>
         <path d="M8 16l5 5 11-11" stroke="#00e676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -500,11 +506,12 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
       <a href="#features" class="btn btn-secondary btn-lg">Explore Features</a>
     </div>
     <div class="hero-stats">
-      <div class="hero-stat"><div class="hero-stat-value" id="stat-users">0</div><div class="hero-stat-label">Users Protected</div></div>
-      <div class="hero-stat"><div class="hero-stat-value" id="stat-contracts">0</div><div class="hero-stat-label">Contracts Monitored</div></div>
-      <div class="hero-stat"><div class="hero-stat-value" id="stat-alerts-hero">0</div><div class="hero-stat-label">Threats Detected</div></div>
-      <div class="hero-stat"><div class="hero-stat-value">BOT</div><div class="hero-stat-label">Chain Network</div></div>
+      <div class="hero-stat"><div class="hero-stat-value" id="stat-users">—</div><div class="hero-stat-label">Registered Users</div></div>
+      <div class="hero-stat"><div class="hero-stat-value" id="stat-contracts">—</div><div class="hero-stat-label">Contracts Monitored</div></div>
+      <div class="hero-stat"><div class="hero-stat-value" id="stat-alerts-hero">—</div><div class="hero-stat-label">Alerts Recorded</div></div>
+      <div class="hero-stat"><div class="hero-stat-value">BOT</div><div class="hero-stat-label">Chain Testnet</div></div>
     </div>
+    <div class="hero-contract">BOT Chain Testnet · Registry <a id="contract-link" target="_blank" rel="noopener"></a></div>
   </div>
 </section>
 
@@ -545,7 +552,7 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
       <div class="feature-card">
         <div class="feature-icon">🔧</div>
         <div class="feature-title">Custom Rules</div>
-        <div class="feature-desc">Configure per-contract monitoring rules with custom thresholds for withdrawal amounts and transaction frequency.</div>
+        <div class="feature-desc">Configure per-contract monitoring rules with custom thresholds for transfer amounts and activity volume.</div>
       </div>
     </div>
   </div>
@@ -573,12 +580,12 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
       <div class="how-step">
         <div class="step-num">3</div>
         <div class="step-title">Monitor Events</div>
-        <div class="step-desc">The frontend polls BOT Chain RPC for contract events matching your security rules.</div>
+        <div class="step-desc">While the app is open, it polls BOT Chain RPC for events matching your security rules.</div>
       </div>
       <div class="how-step">
         <div class="step-num">4</div>
-        <div class="step-title">Alert Stored On-Chain</div>
-        <div class="step-desc">Confirmed threats are recorded as immutable on-chain alerts. Acknowledge them once resolved.</div>
+        <div class="step-title">Record On-Chain</div>
+        <div class="step-desc">Review each detection and record confirmed threats as immutable on-chain alerts. Acknowledge them once resolved.</div>
       </div>
     </div>
   </div>
@@ -590,17 +597,17 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
     <div class="section-header centered">
       <div class="section-label">Supported Network</div>
       <div class="section-title">Built on BOT Chain</div>
-      <div class="section-sub">ContractWatch is exclusively deployed on BOT Chain — a high-performance EVM-compatible blockchain.</div>
+      <div class="section-sub">ContractWatch is currently deployed on BOT Chain Testnet — an EVM-compatible blockchain.</div>
     </div>
     <div class="network-card">
       <div class="network-logo">⛓</div>
       <div class="network-info">
-        <h3>BOT Chain (Botchain)</h3>
+        <h3>BOT Chain Testnet</h3>
         <p style="font-size:.85rem;color:var(--text-secondary)">A fast, EVM-compatible blockchain designed for decentralised applications with low fees and high throughput.</p>
         <div class="network-meta">
-          <div class="network-pill">Chain ID <span>677</span></div>
-          <div class="network-pill">RPC <span>rpc.botchain.ai</span></div>
-          <div class="network-pill">Explorer <span>scan.botchain.ai</span></div>
+          <div class="network-pill">Chain ID <span>968</span></div>
+          <div class="network-pill">RPC <span>rpc.bohr.life</span></div>
+          <div class="network-pill">Explorer <span>scan.bohr.life</span></div>
           <div class="network-pill">EVM <span>Compatible</span></div>
         </div>
       </div>
@@ -643,7 +650,7 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
         <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="15" stroke="#00e676" stroke-width="1.5"/><path d="M8 16l5 5 11-11" stroke="#00e676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         ContractWatch
       </div>
-      <div class="footer-desc">Smart contract security monitoring and threat intelligence platform, built exclusively on BOT Chain.</div>
+      <div class="footer-desc">Smart contract security monitoring and threat intelligence platform, built on BOT Chain.</div>
     </div>
     <div>
       <div class="footer-col-title">Platform</div>
@@ -658,22 +665,22 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
       <div class="footer-col-title">Resources</div>
       <div class="footer-links">
         <a href="#" onclick="downloadWhitepaper(event)">📄 Whitepaper</a>
-        <a href="https://github.com" target="_blank">GitHub</a>
-        <a href="https://botchain.ai" target="_blank">BOT Chain</a>
-        <a href="https://scan.botchain.ai" target="_blank">Explorer</a>
+        <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://botchain.ai" target="_blank" rel="noopener">BOT Chain</a>
+        <a href="https://scan.bohr.life" target="_blank" rel="noopener">Testnet Explorer</a>
       </div>
     </div>
     <div>
       <div class="footer-col-title">Network</div>
       <div class="footer-links">
-        <a href="https://botchain.ai" target="_blank">BOT Chain Website</a>
-        <a href="https://scan.botchain.ai" target="_blank">BOT Chain Explorer</a>
+        <a href="https://botchain.ai" target="_blank" rel="noopener">BOT Chain Website</a>
+        <a href="https://scan.bohr.life" target="_blank" rel="noopener">BOT Chain Testnet Explorer</a>
       </div>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2024 ContractWatch. All rights reserved.</p>
-    <p>Built on <a href="https://botchain.ai" target="_blank" style="color:var(--green)">BOT Chain</a></p>
+    <p>© 2026 ContractWatch. All rights reserved.</p>
+    <p>Built on <a href="https://botchain.ai" target="_blank" rel="noopener" style="color:var(--green)">BOT Chain</a></p>
   </div>
 </footer>
 
@@ -691,7 +698,7 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
     <div class="connect-desc">Connect your wallet to access the ContractWatch security platform on BOT Chain.</div>
     <div class="connect-steps">
       <div class="connect-step"><div class="connect-step-num">1</div>Your wallet will be detected and connected.</div>
-      <div class="connect-step"><div class="connect-step-num">2</div>Switch to BOT Chain (ID 677) if prompted.</div>
+      <div class="connect-step"><div class="connect-step-num">2</div>Switch to BOT Chain Testnet (ID 968) if prompted.</div>
       <div class="connect-step"><div class="connect-step-num">3</div>Register your profile on-chain (one-time, gas required).</div>
     </div>
     <button class="btn btn-primary w-full" onclick="connectWallet()">🔐 Connect MetaMask</button>
@@ -704,8 +711,8 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
 ═══════════════════════════════════════ -->
 <div id="register-screen" class="flex">
   <div class="register-box">
-    <div class="register-title">Create Your Profile</div>
-    <div class="register-sub">You are connecting for the first time. Register your on-chain profile to begin monitoring contracts.</div>
+    <div class="register-title" id="reg-title">Create Your Profile</div>
+    <div class="register-sub" id="reg-sub">You are connecting for the first time. Register your on-chain profile to begin monitoring contracts.</div>
     <div class="flex-col gap-4">
       <div class="form-group">
         <label class="form-label">Username *</label>
@@ -714,10 +721,11 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
       <div class="form-group">
         <label class="form-label">Email (optional)</label>
         <input id="reg-email" type="email" class="form-input" placeholder="contact@example.com"/>
+        <div class="form-hint">⚠️ Anything you enter here is stored publicly on-chain and readable by anyone.</div>
       </div>
-      <div class="text-xs text-muted" style="line-height:1.5">By registering, you create an on-chain profile on BOT Chain. This requires a small gas fee.</div>
+      <div class="text-xs text-muted" style="line-height:1.5">Saving your profile is an on-chain transaction on BOT Chain Testnet and requires a small gas fee.</div>
       <button class="btn btn-primary w-full" id="reg-btn" onclick="submitRegistration()">✅ Register On-Chain</button>
-      <button class="btn btn-outline w-full" onclick="disconnect()">Cancel</button>
+      <button class="btn btn-outline w-full" onclick="cancelRegister()">Cancel</button>
     </div>
   </div>
 </div>
@@ -733,13 +741,13 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
       <div class="sidebar-label">Main</div>
       <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard')"><span class="nav-item-icon">📊</span>Dashboard</div>
       <div class="nav-item" data-page="contracts" onclick="showPage('contracts')"><span class="nav-item-icon">📋</span>Contracts</div>
-      <div class="nav-item" data-page="alerts" onclick="showPage('alerts')"><span class="nav-item-icon">🚨</span>Alerts</div>
+      <div class="nav-item" data-page="alerts" onclick="showPage('alerts')"><span class="nav-item-icon">🚨</span>Alerts<span class="nav-count hidden" id="pending-count"></span></div>
       <div class="nav-item" data-page="reports" onclick="showPage('reports')"><span class="nav-item-icon">📝</span>Reports</div>
       <div class="sidebar-label">Account</div>
       <div class="nav-item" data-page="profile" onclick="showPage('profile')"><span class="nav-item-icon">👤</span>Profile</div>
       <div class="sidebar-footer">
         <div class="monitor-pulse" id="monitor-status" style="display:none"><div class="pulse-dot"></div>Monitoring active</div>
-        <div class="mt-2">Chain: BOT Chain (677)</div>
+        <div class="mt-2">Chain: BOT Chain Testnet (968)</div>
       </div>
     </div>
 
@@ -760,10 +768,10 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
         </div>
         <div class="stats-grid">
           <div class="stat-card" style="--accent:var(--green)"><div class="value" id="d-total">0</div><div class="label">Total Contracts</div></div>
-          <div class="stat-card" style="--accent:var(--blue)"><div class="value" id="d-active">0</div><div class="label">Active Monitoring</div></div>
+          <div class="stat-card" style="--accent:var(--blue)"><div class="value" id="d-active">0</div><div class="label">Live Monitoring</div></div>
           <div class="stat-card" style="--accent:var(--orange)"><div class="value" id="d-alerts">0</div><div class="label">Total Alerts</div></div>
-          <div class="stat-card" style="--accent:var(--red)"><div class="value" id="d-critical">0</div><div class="label">Critical Alerts</div></div>
-          <div class="stat-card" style="--accent:var(--yellow)"><div class="value" id="d-medium">0</div><div class="label">Medium Alerts</div></div>
+          <div class="stat-card" style="--accent:var(--red)"><div class="value" id="d-critical">0</div><div class="label">Open Critical</div></div>
+          <div class="stat-card" style="--accent:var(--yellow)"><div class="value" id="d-medium">0</div><div class="label">Open Medium</div></div>
         </div>
         <div class="flex gap-4" style="flex-wrap:wrap;margin-bottom:1.5rem">
           <div style="flex:1;min-width:260px">
@@ -826,6 +834,7 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
             </select>
           </div>
         </div>
+        <div id="pending-list"></div>
         <div id="alerts-list"></div>
       </div>
 
@@ -887,7 +896,8 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
         <div class="form-group">
           <label class="form-label">Network</label>
           <select id="ac-network" class="form-input form-select">
-            <option value="BOT Chain|677">BOT Chain (677)</option>
+            <option value="BOT Chain Testnet|968">BOT Chain Testnet (968)</option>
+            <option value="BOT Chain|677">BOT Chain Mainnet (677)</option>
             <option value="Ethereum|1">Ethereum Mainnet</option>
             <option value="BSC|56">BNB Smart Chain</option>
             <option value="Polygon|137">Polygon</option>
@@ -895,6 +905,7 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
             <option value="Arbitrum|42161">Arbitrum One</option>
             <option value="Optimism|10">Optimism</option>
           </select>
+          <div class="form-hint">Live monitoring runs on BOT Chain Testnet only; other networks are registry-only.</div>
         </div>
       </div>
       <div class="form-group">
@@ -909,6 +920,18 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
       <div class="toggle-row"><span class="text-sm">Contract Upgrades</span><label class="toggle"><input type="checkbox" id="mr-upgrade" checked><div class="toggle-slider"></div></label></div>
       <div class="toggle-row"><span class="text-sm">Abnormal Activity</span><label class="toggle"><input type="checkbox" id="mr-abnormal" checked><div class="toggle-slider"></div></label></div>
       <div class="toggle-row"><span class="text-sm">Token Movements</span><label class="toggle"><input type="checkbox" id="mr-token" checked><div class="toggle-slider"></div></label></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Large Transfer Threshold</label>
+          <input id="ac-threshold" type="text" inputmode="decimal" class="form-input" value="1"/>
+          <div class="form-hint">In tokens (18 decimals)</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Abnormal Activity Threshold</label>
+          <input id="ac-abnormal" type="number" min="1" class="form-input" value="100"/>
+          <div class="form-hint">Transactions per scan window</div>
+        </div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('modal-add-contract')">Cancel</button>
@@ -953,7 +976,7 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
   </div>
 </div>
 
-<!-- Contract Detail Modal / confirm deactivate -->
+<!-- Confirm Modal -->
 <div class="modal-overlay hidden" id="modal-confirm">
   <div class="modal" style="max-width:400px">
     <div class="modal-header"><div class="modal-title" id="confirm-title">Confirm Action</div><button class="modal-close" onclick="closeModal('modal-confirm')">✕</button></div>
@@ -967,19 +990,19 @@ footer{background:var(--bg1);border-top:1px solid var(--border);padding:3rem 1.5
 
 <script>
 /* ══════════════════════════════════════════════════════
-   CONFIGURATION
+   CONFIGURATION (BOT Chain Testnet)
 ══════════════════════════════════════════════════════ */
-const BOT_CHAIN = {
-  chainId:'0x2A5', // 677
-  chainName:'BOT Chain',
-  nativeCurrency:{name:'BOT',symbol:'BOT',decimals:18},
-  rpcUrls:['https://rpc.botchain.ai'],
-  blockExplorerUrls:['https://scan.botchain.ai']
+const CFG = {
+  CONTRACT_ADDRESS: '0xa668Bf9FA6A044360405c08D809672Ed7F9B9663',
+  CHAIN_ID: 968,
+  CHAIN_ID_HEX: '0x3c8',
+  CHAIN_NAME: 'BOT Chain Testnet',
+  RPC_URL: 'https://rpc.bohr.life',
+  EXPLORER: 'https://scan.bohr.life',
+  NATIVE: { name:'BOT', symbol:'BOT', decimals:18 }
 };
-
-// ── After deployment, replace this with your actual deployed address ──────────
-const CONTRACT_ADDRESS = '0x0000000000000000000000000000000000000000';
-// ─────────────────────────────────────────────────────────────────────────────
+const SCAN_BLOCKS = 500;          // blocks scanned on the first pass per contract
+const MONITOR_INTERVAL_MS = 60000;
 
 const CONTRACT_ABI = [
   "function registerUser(string username,string email) external",
@@ -1013,13 +1036,24 @@ const CONTRACT_ABI = [
 /* ══════════════════════════════════════════════════════
    STATE
 ══════════════════════════════════════════════════════ */
+const NETWORK = ethers.Network.from(CFG.CHAIN_ID);
+const readProvider = new ethers.JsonRpcProvider(CFG.RPC_URL, NETWORK, { staticNetwork: NETWORK });
+const readContract = new ethers.Contract(CFG.CONTRACT_ADDRESS, CONTRACT_ABI, readProvider);
+
 let provider, signer, contract, userAddress, userProfile;
 let monitoredContracts = [];   // [{contract, config}]
 let myAlerts = [];
 let myReports = [];
+let pendingDetections = [];    // detected by the monitor, not yet recorded on-chain
+const seenDetections = new Set();
+const lastScannedBlock = {};   // contractId -> block number
 let severityChart = null;
 let monitorInterval = null;
 let currentPage = 'dashboard';
+
+// Reads go through the wallet when connected, otherwise the public RPC
+function R(){ return contract || readContract; }
+function chainProvider(){ return provider || readProvider; }
 
 /* ══════════════════════════════════════════════════════
    PARTICLES
@@ -1040,7 +1074,6 @@ let currentPage = 'dashboard';
       if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;
       if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;
     });
-    // draw connections
     for(let i=0;i<particles.length;i++)for(let j=i+1;j<particles.length;j++){
       const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y;
       const d=Math.sqrt(dx*dx+dy*dy);
@@ -1063,12 +1096,12 @@ window.addEventListener('scroll',()=>{
 ══════════════════════════════════════════════════════ */
 const FAQS=[
   {q:'What is ContractWatch?',a:'ContractWatch is a decentralised smart contract security monitoring platform built on BOT Chain. It allows users to register smart contract addresses, configure monitoring rules, and store security alerts immutably on-chain.'},
-  {q:'Do I need a wallet to use ContractWatch?',a:'Yes. ContractWatch is fully on-chain. You need a MetaMask-compatible wallet connected to BOT Chain (Chain ID 677) to register your profile, add contracts, and store alerts.'},
-  {q:'How does threat detection work?',a:'The ContractWatch frontend continuously polls the BOT Chain RPC for contract events matching your configured monitoring rules. When a threat is confirmed, the alert details are stored on-chain through the ContractWatch smart contract.'},
-  {q:'Can ContractWatch monitor contracts on other networks?',a:'You can register and track contract addresses from other networks, but the ContractWatch monitoring infrastructure runs on BOT Chain. Cross-chain event data must be submitted by the user or an authorised frontend.'},
-  {q:'Are my alert records permanent?',a:'Yes. All alerts, monitoring configurations, and security reports are stored on BOT Chain smart contracts — immutable and tamper-proof.'},
-  {q:'What is BOT Chain?',a:'BOT Chain (Botchain) is an EVM-compatible blockchain with chain ID 677. Its website is botchain.ai and its block explorer is at scan.botchain.ai.'},
-  {q:'Is there a contract limit?',a:'Each wallet can monitor up to 50 smart contracts and store up to 500 alerts per contract.'},
+  {q:'Do I need a wallet to use ContractWatch?',a:'Yes. ContractWatch is fully on-chain. You need a MetaMask-compatible wallet connected to BOT Chain Testnet (Chain ID 968) to register your profile, add contracts, and store alerts.'},
+  {q:'How does threat detection work?',a:'While the app is open, it polls the BOT Chain RPC for events on your contracts that match your monitoring rules (ownership changes, upgrades, mints, large transfers and more). Each detection appears in your Alerts page, and you choose which ones to record on-chain.'},
+  {q:'Can ContractWatch monitor contracts on other networks?',a:'You can register contract addresses from other networks in the registry, but live monitoring currently runs on BOT Chain Testnet only.'},
+  {q:'Are my alert records permanent?',a:'Yes. All recorded alerts, monitoring configurations, and security reports are stored on BOT Chain — immutable and tamper-proof. Profile data, including email, is publicly readable.'},
+  {q:'What is BOT Chain?',a:'BOT Chain (Botchain) is an EVM-compatible blockchain. ContractWatch is live on its testnet (chain ID 968), with the explorer at scan.bohr.life.'},
+  {q:'Is there a contract limit?',a:'Each wallet can register up to 50 smart contracts and store up to 500 alerts per contract.'},
 ];
 function initFAQ(){
   const c=document.getElementById('faq-list');
@@ -1089,7 +1122,8 @@ function toggleFAQ(i){
 function toast(msg,type='info',duration=4000){
   const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
   const t=document.createElement('div');t.className=`toast ${type}`;
-  t.innerHTML=`<span class="toast-icon">${icons[type]}</span><div class="toast-msg">${msg}</div>`;
+  t.innerHTML=`<span class="toast-icon">${icons[type]}</span><div class="toast-msg"></div>`;
+  t.querySelector('.toast-msg').textContent=msg;
   document.getElementById('toast-container').appendChild(t);
   setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300)},duration);
 }
@@ -1104,9 +1138,11 @@ document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click
 /* ══════════════════════════════════════════════════════
    SCREENS
 ══════════════════════════════════════════════════════ */
+const SCREEN_DISPLAY={landing:'block',app:'block'};
 function showLanding(){
   hide(['connect-screen','register-screen','app']);show(['landing']);
   document.getElementById('landing-nav-links').classList.remove('hidden');
+  document.getElementById('nav').classList.remove('solid');
 }
 function showConnectScreen(){
   hide(['landing','register-screen','app']);show(['connect-screen']);
@@ -1114,59 +1150,60 @@ function showConnectScreen(){
 }
 function showRegisterScreen(){
   hide(['landing','connect-screen','app']);show(['register-screen']);
+  document.getElementById('landing-nav-links').classList.add('hidden');
 }
 function showApp(){
   hide(['landing','connect-screen','register-screen']);show(['app']);
   document.getElementById('landing-nav-links').classList.add('hidden');
   document.getElementById('nav-disconnect-btn').classList.remove('hidden');
   document.getElementById('nav-connect-btn').classList.add('hidden');
+  document.getElementById('nav').classList.add('solid');
+  window.scrollTo(0,0);
 }
-function show(ids){ids.forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='flex';el.classList.remove('hidden')}})}
+function show(ids){ids.forEach(id=>{const el=document.getElementById(id);if(el){el.style.display=SCREEN_DISPLAY[id]||'flex';el.classList.remove('hidden')}})}
 function hide(ids){ids.forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='none';el.classList.add('hidden')}})}
 
 /* ══════════════════════════════════════════════════════
    WALLET
 ══════════════════════════════════════════════════════ */
+async function ensureChain(){
+  const cur=await window.ethereum.request({method:'eth_chainId'});
+  if(parseInt(cur,16)===CFG.CHAIN_ID)return;
+  try{
+    await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:CFG.CHAIN_ID_HEX}]});
+  }catch(e){
+    const code=e?.code??e?.data?.originalError?.code;
+    if(code===4902||/unrecognized|not added|unknown chain/i.test(e?.message||'')){
+      await window.ethereum.request({method:'wallet_addEthereumChain',params:[{
+        chainId:CFG.CHAIN_ID_HEX,
+        chainName:CFG.CHAIN_NAME,
+        nativeCurrency:CFG.NATIVE,
+        rpcUrls:[CFG.RPC_URL],
+        blockExplorerUrls:[CFG.EXPLORER]
+      }]});
+    }else throw e;
+  }
+}
+
 async function connectWallet(){
   if(!window.ethereum){toast('MetaMask not found. Please install it at metamask.io','error');return}
   try{
     await window.ethereum.request({method:'eth_requestAccounts'});
+    await ensureChain();
+    // create the provider after the chain switch (ethers v6 rejects network changes)
     provider=new ethers.BrowserProvider(window.ethereum);
     signer=await provider.getSigner();
     userAddress=await signer.getAddress();
+    contract=new ethers.Contract(CFG.CONTRACT_ADDRESS,CONTRACT_ABI,signer);
 
-    // switch / add BOT Chain
-    const net=await provider.getNetwork();
-    if(net.chainId!==677n){
-      try{
-        await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:BOT_CHAIN.chainId}]});
-      }catch(e){
-        if(e.code===4902||e.code===-32603){
-          await window.ethereum.request({method:'wallet_addEthereumChain',params:[BOT_CHAIN]});
-        }else throw e;
-      }
-      provider=new ethers.BrowserProvider(window.ethereum);
-      signer=await provider.getSigner();
-    }
-
-    contract=new ethers.Contract(CONTRACT_ADDRESS,CONTRACT_ABI,signer);
-
-    // Update nav
     document.getElementById('nav-wallet-addr').textContent=shortenAddr(userAddress);
     document.getElementById('nav-wallet-addr').classList.remove('hidden');
+    document.getElementById('nav-connect-btn').classList.add('hidden');
+    document.getElementById('nav-disconnect-btn').classList.remove('hidden');
 
-    // Check if contract is deployed (zero address = demo mode)
-    if(CONTRACT_ADDRESS==='0x0000000000000000000000000000000000000000'){
-      toast('Running in DEMO mode — deploy ContractWatch.sol and update CONTRACT_ADDRESS to go live.','warning',8000);
-      enterDemoMode();
-      return;
-    }
-
-    // Check registration
-    const reg=await contract.isRegistered(userAddress);
-    if(!reg){showRegisterScreen();}
-    else{await loadUserData();showApp();loadDashboard();}
-
+    const reg=await R().isRegistered(userAddress);
+    if(!reg){setRegisterMode(false);showRegisterScreen();}
+    else{await loadUserData();showApp();showPage('dashboard');loadDashboard();}
   }catch(e){
     console.error(e);
     toast('Connection failed: '+errorMsg(e),'error');
@@ -1175,59 +1212,88 @@ async function connectWallet(){
 
 function disconnect(){
   provider=signer=contract=userAddress=userProfile=null;
-  monitoredContracts=[];myAlerts=[];myReports=[];
-  if(monitorInterval)clearInterval(monitorInterval);
+  monitoredContracts=[];myAlerts=[];myReports=[];pendingDetections=[];
+  seenDetections.clear();
+  Object.keys(lastScannedBlock).forEach(k=>delete lastScannedBlock[k]);
+  stopMonitoring();
   document.getElementById('nav-wallet-addr').classList.add('hidden');
   document.getElementById('nav-disconnect-btn').classList.add('hidden');
   document.getElementById('nav-connect-btn').classList.remove('hidden');
   showLanding();
+  loadPlatformStats();
 }
 
 /* ══════════════════════════════════════════════════════
-   REGISTRATION
+   REGISTRATION / PROFILE EDIT
 ══════════════════════════════════════════════════════ */
+let editingProfile=false;
+function setRegisterMode(edit){
+  editingProfile=edit;
+  document.getElementById('reg-title').textContent=edit?'Edit Your Profile':'Create Your Profile';
+  document.getElementById('reg-sub').textContent=edit?'Update the details stored in your on-chain profile.':'You are connecting for the first time. Register your on-chain profile to begin monitoring contracts.';
+  document.getElementById('reg-btn').textContent=edit?'Update Profile':'✅ Register On-Chain';
+  if(!edit){document.getElementById('reg-username').value='';document.getElementById('reg-email').value='';}
+}
+function cancelRegister(){
+  if(editingProfile){showApp();showPage('profile');}
+  else disconnect();
+}
 async function submitRegistration(){
   const username=document.getElementById('reg-username').value.trim();
   const email=document.getElementById('reg-email').value.trim();
   if(!username){toast('Username is required','warning');return}
+  if(username.length>50){toast('Username must be 50 characters or less','warning');return}
   const btn=document.getElementById('reg-btn');
-  btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Registering…';
+  btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Saving…';
   try{
-    const tx=await contract.registerUser(username,email);
-    toast('Transaction submitted — waiting for confirmation…','info');
-    await tx.wait();
-    toast('Profile registered on-chain! Welcome, '+username,'success');
-    await loadUserData();showApp();loadDashboard();
-  }catch(e){toast('Registration failed: '+errorMsg(e),'error')}
-  finally{btn.disabled=false;btn.textContent='✅ Register On-Chain'}
+    if(editingProfile){
+      await sendTx(()=>contract.updateProfile(username,email),'Profile updated!');
+      await loadUserData();showApp();showPage('profile');
+    }else{
+      await sendTx(()=>contract.registerUser(username,email),'Profile registered on-chain! Welcome, '+username);
+      await loadUserData();showApp();showPage('dashboard');loadDashboard();
+    }
+  }catch(e){toast((editingProfile?'Update':'Registration')+' failed: '+errorMsg(e),'error')}
+  finally{btn.disabled=false;setRegisterMode(editingProfile);if(editingProfile){document.getElementById('reg-username').value=username;document.getElementById('reg-email').value=email}}
 }
+function openEditProfile(){
+  setRegisterMode(true);
+  document.getElementById('reg-username').value=userProfile?.username||'';
+  document.getElementById('reg-email').value=userProfile?.email||'';
+  showRegisterScreen();
+}
+
+/* ══════════════════════════════════════════════════════
+   DATA NORMALISATION
+══════════════════════════════════════════════════════ */
+function toProfile(p){return{wallet:p.wallet,username:p.username,email:p.email,registeredAt:Number(p.registeredAt),totalContracts:Number(p.totalContracts),totalAlerts:Number(p.totalAlerts),exists:p.exists,isPremium:p.isPremium}}
+function toContract(c){return{id:Number(c.id),contractAddress:c.contractAddress,networkName:c.networkName,networkChainId:Number(c.networkChainId),name:c.name,description:c.description,addedBy:c.addedBy,addedAt:Number(c.addedAt),lastCheckedAt:Number(c.lastCheckedAt),active:c.active}}
+function toConfig(g){return{watchOwnershipChanges:g.watchOwnershipChanges,watchMinting:g.watchMinting,watchLargeWithdrawals:g.watchLargeWithdrawals,watchAdminOps:g.watchAdminOps,watchUpgrades:g.watchUpgrades,watchAbnormalActivity:g.watchAbnormalActivity,watchTokenMovements:g.watchTokenMovements,largeWithdrawalThreshold:BigInt(g.largeWithdrawalThreshold),abnormalTxThreshold:Number(g.abnormalTxThreshold)}}
+function toAlert(a){return{id:Number(a.id),contractId:Number(a.contractId),alertType:a.alertType,description:a.description,txHash:a.txHash,severity:Number(a.severity),detectedAt:Number(a.detectedAt),acknowledged:a.acknowledged,acknowledgedBy:a.acknowledgedBy,acknowledgedAt:Number(a.acknowledgedAt)}}
+function toReport(r){return{id:Number(r.id),contractId:Number(r.contractId),reportedBy:r.reportedBy,reportTitle:r.reportTitle,reportContent:r.reportContent,severity:Number(r.severity),createdAt:Number(r.createdAt),upvotes:Number(r.upvotes)}}
+function isLive(c){return c.active&&c.networkChainId===CFG.CHAIN_ID}
 
 /* ══════════════════════════════════════════════════════
    LOAD DATA
 ══════════════════════════════════════════════════════ */
 async function loadUserData(){
-  userProfile=await contract.getMyProfile();
-  const ids=await contract.getMyContractIds();
-  monitoredContracts=[];
-  for(const id of ids){
-    try{
-      const [c,cfg]=await contract.getContract(id);
-      if(c.active)monitoredContracts.push({contract:c,config:cfg});
-    }catch(e){}
-  }
-  const alertIds=await contract.getMyAlertIds();
-  myAlerts=[];
-  for(const aid of alertIds){
-    try{myAlerts.push(await contract.getAlert(aid))}catch(e){}
-  }
-  // Load reports for user contracts
-  myReports=[];
-  for(const mc of monitoredContracts){
-    const rids=await contract.getContractReportIds(mc.contract.id);
-    for(const rid of rids){
-      try{myReports.push(await contract.getReport(rid))}catch(e){}
-    }
-  }
+  userProfile=toProfile(await R().getUserProfile(userAddress));
+  const ids=await R().getUserContractIds(userAddress);
+  const all=await Promise.all(ids.map(id=>R().getContract(id).then(([c,g])=>({contract:toContract(c),config:toConfig(g)})).catch(()=>null)));
+  monitoredContracts=all.filter(m=>m&&m.contract.active);
+
+  // Alerts and reports are read per contract (works without relying on msg.sender in view calls)
+  const alertIdLists=await Promise.all(monitoredContracts.map(m=>R().getContractAlertIds(m.contract.id)));
+  const alertIds=[...new Set(alertIdLists.flat().map(Number))];
+  myAlerts=(await Promise.all(alertIds.map(id=>R().getAlert(id).then(toAlert).catch(()=>null)))).filter(Boolean).sort((a,b)=>a.id-b.id);
+
+  const reportIdLists=await Promise.all(monitoredContracts.map(m=>R().getContractReportIds(m.contract.id)));
+  const reportIds=[...new Set(reportIdLists.flat().map(Number))];
+  myReports=(await Promise.all(reportIds.map(id=>R().getReport(id).then(toReport).catch(()=>null)))).filter(Boolean).sort((a,b)=>a.id-b.id);
+
+  // drop pending detections that are now recorded on-chain
+  pendingDetections=pendingDetections.filter(p=>!myAlerts.some(a=>a.contractId===p.contractId&&a.txHash===p.txHash&&a.alertType===p.alertType));
+  updatePendingCount();
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1235,12 +1301,15 @@ async function loadUserData(){
 ══════════════════════════════════════════════════════ */
 async function loadPlatformStats(){
   try{
-    const [u,c,a,r]=await contract.getPlatformStats();
-    ['stat-users','ps-users'].forEach(id=>setEl(id,u.toString()));
-    ['stat-contracts','ps-contracts'].forEach(id=>setEl(id,c.toString()));
-    ['stat-alerts-hero','ps-alerts'].forEach(id=>setEl(id,a.toString()));
-    setEl('ps-reports',r.toString());
-  }catch(e){}
+    const [u,c,a,r]=await R().getPlatformStats();
+    animateCounter('stat-users',Number(u));
+    animateCounter('stat-contracts',Number(c));
+    animateCounter('stat-alerts-hero',Number(a));
+    setEl('ps-users',Number(u).toLocaleString());
+    setEl('ps-contracts',Number(c).toLocaleString());
+    setEl('ps-alerts',Number(a).toLocaleString());
+    setEl('ps-reports',Number(r).toLocaleString());
+  }catch(e){console.warn('Stats unavailable',e)}
 }
 function setEl(id,v){const el=document.getElementById(id);if(el)el.textContent=v}
 
@@ -1250,30 +1319,36 @@ function setEl(id,v){const el=document.getElementById(id);if(el)el.textContent=v
 function loadDashboard(){
   if(userProfile)setEl('dash-username',userProfile.username||shortenAddr(userAddress));
   const total=monitoredContracts.length;
-  const active=monitoredContracts.filter(m=>m.contract.active).length;
-  const critical=myAlerts.filter(a=>Number(a.severity)===3&&!a.acknowledged).length;
-  const medium=myAlerts.filter(a=>Number(a.severity)===2&&!a.acknowledged).length;
-  setEl('d-total',total);setEl('d-active',active);
+  const live=monitoredContracts.filter(m=>isLive(m.contract)).length;
+  const critical=myAlerts.filter(a=>a.severity===3&&!a.acknowledged).length;
+  const medium=myAlerts.filter(a=>a.severity===2&&!a.acknowledged).length;
+  setEl('d-total',total);setEl('d-active',live);
   setEl('d-alerts',myAlerts.length);setEl('d-critical',critical);setEl('d-medium',medium);
   renderSeverityChart();
   renderDashContracts();
   renderDashActivity();
-  if(CONTRACT_ADDRESS!=='0x0000000000000000000000000000000000000000')loadPlatformStats();
   startMonitoring();
 }
 
 function renderSeverityChart(){
-  const low=myAlerts.filter(a=>Number(a.severity)===1).length;
-  const med=myAlerts.filter(a=>Number(a.severity)===2).length;
-  const crit=myAlerts.filter(a=>Number(a.severity)===3).length;
+  const low=myAlerts.filter(a=>a.severity===1).length;
+  const med=myAlerts.filter(a=>a.severity===2).length;
+  const crit=myAlerts.filter(a=>a.severity===3).length;
   if(severityChart)severityChart.destroy();
   const ctx=document.getElementById('chart-severity');
   if(!ctx)return;
+  const empty=low+med+crit===0;
   severityChart=new Chart(ctx,{
     type:'doughnut',
-    data:{labels:['Low','Medium','Critical'],datasets:[{data:[low||1,med||0,crit||0],backgroundColor:['#2196f3','#ff9800','#f44336'],borderWidth:0}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8aabcf',font:{size:11}}}}}
+    data:empty
+      ?{labels:['No alerts'],datasets:[{data:[1],backgroundColor:['#1e3050'],borderWidth:0}]}
+      :{labels:['Low','Medium','Critical'],datasets:[{data:[low,med,crit],backgroundColor:['#2196f3','#ff9800','#f44336'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8aabcf',font:{size:11}}},tooltip:{enabled:!empty}}}
   });
+}
+
+function statusBadge(c){
+  return isLive(c)?'<span class="badge badge-green">Live</span>':'<span class="badge badge-muted">Registry only</span>';
 }
 
 function renderDashContracts(){
@@ -1281,14 +1356,14 @@ function renderDashContracts(){
   if(!monitoredContracts.length){
     el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No contracts yet</div><div class="empty-desc">Add your first contract to begin monitoring.</div></div>`;return;
   }
-  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Name</th><th>Address</th><th>Network</th><th>Status</th><th>Alerts</th></tr></thead><tbody>'+
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Name</th><th>Address</th><th>Network</th><th>Status</th><th>Open Alerts</th></tr></thead><tbody>'+
     monitoredContracts.slice(0,5).map(m=>{
       const acs=myAlerts.filter(a=>a.contractId===m.contract.id&&!a.acknowledged).length;
       return `<tr onclick="showContractDetail(${m.contract.id})" style="cursor:pointer">
         <td>${esc(m.contract.name)}</td>
         <td><span class="truncate" style="max-width:120px;display:inline-block;font-family:monospace;font-size:.75rem">${shortenAddr(m.contract.contractAddress)}</span></td>
         <td><span class="badge badge-blue">${esc(m.contract.networkName)}</span></td>
-        <td><span class="badge badge-green">Active</span></td>
+        <td>${statusBadge(m.contract)}</td>
         <td><span class="badge ${acs>0?'badge-orange':'badge-muted'}">${acs}</span></td>
       </tr>`;
     }).join('')+'</tbody></table></div>';
@@ -1297,19 +1372,22 @@ function renderDashContracts(){
 function renderDashActivity(){
   const el=document.getElementById('dash-activity-feed');
   const recent=myAlerts.slice(-8).reverse();
-  if(!recent.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">🛡️</div><div class="empty-title">All clear</div><div class="empty-desc">No recent security events.</div></div>`;return}
+  if(!recent.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">🛡️</div><div class="empty-title">All clear</div><div class="empty-desc">No recorded security events.</div></div>`;return}
   el.innerHTML=recent.map(a=>{
-    const mc=monitoredContracts.find(m=>m.contract.id===a.contractId);
-    const name=mc?mc.contract.name:('Contract #'+a.contractId);
     return `<div class="activity-item">
       <div class="activity-icon" style="background:${sevColor(a.severity,'bg')}">${sevIcon(a.severity)}</div>
       <div class="activity-info">
         <div class="activity-title">${esc(a.alertType)}</div>
-        <div class="activity-meta">${esc(name)} · ${timeAgo(Number(a.detectedAt))}</div>
+        <div class="activity-meta">${esc(contractName(a.contractId))} · ${timeAgo(a.detectedAt)}</div>
       </div>
-      ${a.acknowledged?'<span class="badge badge-muted">ACK</span>':'<span class="badge '+sevBadge(a.severity)+'">'+ sevLabel(a.severity)+'</span>'}
+      ${a.acknowledged?'<span class="badge badge-muted">ACK</span>':'<span class="badge '+sevBadge(a.severity)+'">'+sevLabel(a.severity)+'</span>'}
     </div>`;
   }).join('');
+}
+
+function contractName(id){
+  const mc=monitoredContracts.find(m=>m.contract.id===Number(id));
+  return mc?mc.contract.name:('Contract #'+id);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1322,6 +1400,7 @@ function showPage(page){
   document.getElementById('page-'+page)?.classList.remove('hidden');
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.page===page));
   document.querySelectorAll('.mobile-nav-item').forEach((el,i)=>el.classList.toggle('active',['dashboard','contracts','alerts','reports','profile'][i]===page));
+  if(page==='dashboard')loadDashboard();
   if(page==='contracts')renderContractsPage();
   if(page==='alerts')renderAlerts();
   if(page==='reports')renderReports();
@@ -1338,7 +1417,7 @@ function renderContractsPage(){
     const acs=myAlerts.filter(a=>a.contractId===m.contract.id&&!a.acknowledged).length;
     return `<div class="contract-card" onclick="showContractDetail(${m.contract.id})">
       <div class="contract-card-header">
-        <div>
+        <div style="min-width:0">
           <div class="contract-name">${esc(m.contract.name)}</div>
           <div class="contract-addr">${shortenAddr(m.contract.contractAddress)}</div>
         </div>
@@ -1346,11 +1425,11 @@ function renderContractsPage(){
       </div>
       ${m.contract.description?`<div class="contract-desc">${esc(m.contract.description)}</div>`:''}
       <div class="contract-meta">
-        <span class="badge badge-green">Active</span>
-        ${acs>0?`<span class="badge badge-orange">${acs} alerts</span>`:''}
+        ${statusBadge(m.contract)}
+        ${acs>0?`<span class="badge badge-orange">${acs} open alerts</span>`:''}
       </div>
       <div class="contract-footer">
-        <span class="text-xs text-muted">Added ${timeAgo(Number(m.contract.addedAt))}</span>
+        <span class="text-xs text-muted">Added ${timeAgo(m.contract.addedAt)}</span>
         <div class="flex gap-2" onclick="event.stopPropagation()">
           <button class="btn btn-outline btn-sm" onclick="showContractDetail(${m.contract.id})">Details</button>
           <button class="btn btn-danger btn-sm" onclick="confirmDeactivate(${m.contract.id})">Remove</button>
@@ -1361,35 +1440,35 @@ function renderContractsPage(){
 }
 
 /* ── Contract Detail ─────────────────────────────── */
-async function showContractDetail(contractId){
+function showContractDetail(contractId){
   showPage('contract-detail');
   const el=document.getElementById('contract-detail-content');
-  el.innerHTML=`<div class="flex items-center gap-3 p-4"><div class="spinner"></div>Loading contract data…</div>`;
   try{
-    const mc=monitoredContracts.find(m=>Number(m.contract.id)===Number(contractId));
+    const mc=monitoredContracts.find(m=>m.contract.id===Number(contractId));
     if(!mc)throw new Error('Contract not found');
     const {contract:c,config:cfg}=mc;
-    const alerts=myAlerts.filter(a=>Number(a.contractId)===Number(contractId));
+    const alerts=myAlerts.filter(a=>a.contractId===c.id);
+    const explorer=c.networkChainId===CFG.CHAIN_ID?`<a href="${CFG.EXPLORER}/address/${c.contractAddress}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">🔍 Explorer</a>`:'';
     el.innerHTML=`
       <div class="detail-header">
-        <div class="flex justify-between items-start flex-wrap gap-3">
-          <div>
+        <div class="flex justify-between items-start gap-3" style="flex-wrap:wrap">
+          <div style="min-width:0">
             <div class="text-xl font-bold">${esc(c.name)}</div>
             <div class="detail-addr mt-1">${c.contractAddress}</div>
             ${c.description?`<div class="text-sm text-secondary mt-2" style="max-width:600px">${esc(c.description)}</div>`:''}
           </div>
-          <div class="flex gap-2 flex-wrap">
-            <a href="https://scan.botchain.ai/address/${c.contractAddress}" target="_blank" class="btn btn-outline btn-sm">🔍 Explorer</a>
+          <div class="flex gap-2" style="flex-wrap:wrap">
+            ${explorer}
             <button class="btn btn-danger btn-sm" onclick="confirmDeactivate(${c.id})">Remove</button>
           </div>
         </div>
         <div class="detail-grid">
           <div class="detail-field"><div class="detail-field-label">Network</div><div class="detail-field-value">${esc(c.networkName)}</div></div>
           <div class="detail-field"><div class="detail-field-label">Chain ID</div><div class="detail-field-value">${c.networkChainId}</div></div>
-          <div class="detail-field"><div class="detail-field-label">Status</div><div class="detail-field-value text-green">Active</div></div>
+          <div class="detail-field"><div class="detail-field-label">Status</div><div class="detail-field-value ${isLive(c)?'text-green':'text-muted'}">${isLive(c)?'Live monitoring':'Registry only'}</div></div>
           <div class="detail-field"><div class="detail-field-label">Total Alerts</div><div class="detail-field-value">${alerts.length}</div></div>
-          <div class="detail-field"><div class="detail-field-label">Added</div><div class="detail-field-value">${formatDate(Number(c.addedAt))}</div></div>
-          <div class="detail-field"><div class="detail-field-label">Last Checked</div><div class="detail-field-value">${formatDate(Number(c.lastCheckedAt))}</div></div>
+          <div class="detail-field"><div class="detail-field-label">Added</div><div class="detail-field-value">${formatDate(c.addedAt)}</div></div>
+          <div class="detail-field"><div class="detail-field-label">Last Scanned Block</div><div class="detail-field-value">${lastScannedBlock[c.id]??'—'}</div></div>
         </div>
       </div>
       <div class="flex gap-4" style="flex-wrap:wrap">
@@ -1403,6 +1482,8 @@ async function showContractDetail(contractId){
             <div class="toggle-row"><span class="text-sm">Contract Upgrades</span>${chk(cfg.watchUpgrades)}</div>
             <div class="toggle-row"><span class="text-sm">Abnormal Activity</span>${chk(cfg.watchAbnormalActivity)}</div>
             <div class="toggle-row"><span class="text-sm">Token Movements</span>${chk(cfg.watchTokenMovements)}</div>
+            <div class="toggle-row"><span class="text-sm">Large Transfer Threshold</span><span class="text-sm">${ethers.formatEther(cfg.largeWithdrawalThreshold)}</span></div>
+            <div class="toggle-row"><span class="text-sm">Abnormal Tx Threshold</span><span class="text-sm">${cfg.abnormalTxThreshold}</span></div>
           </div>
         </div>
         <div style="flex:2;min-width:280px">
@@ -1414,45 +1495,70 @@ async function showContractDetail(contractId){
                 <div class="alert-info">
                   <div class="alert-title">${esc(a.alertType)}</div>
                   <div class="alert-desc">${esc(a.description)}</div>
-                  ${a.txHash?`<div class="alert-meta">Tx: <a href="https://scan.botchain.ai/tx/${a.txHash}" target="_blank" style="color:var(--cyan)">${shortenAddr(a.txHash)}</a></div>`:''}
-                  <div class="alert-meta">${formatDate(Number(a.detectedAt))} · ${sevLabel(a.severity)}</div>
+                  ${txLink(a.txHash)}
+                  <div class="alert-meta">${formatDate(a.detectedAt)} · ${sevLabel(a.severity)}</div>
                 </div>
                 <div class="alert-actions">
                   ${!a.acknowledged?`<button class="btn btn-outline btn-sm" onclick="ackAlert(${a.id})">Ack</button>`:'<span class="badge badge-muted">ACK</span>'}
                 </div>
-              </div>`).join(''):`<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">No alerts</div><div class="empty-desc">No security events detected for this contract.</div></div>`}
+              </div>`).join(''):`<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">No alerts</div><div class="empty-desc">No security events recorded for this contract.</div></div>`}
           </div>
         </div>
       </div>`;
-  }catch(e){el.innerHTML=`<div class="card"><div class="text-red">Error loading contract: ${e.message}</div></div>`}
+  }catch(e){el.innerHTML=`<div class="card"><div class="text-red">Error loading contract: ${esc(e.message)}</div></div>`}
 }
 function chk(v){return `<span class="badge ${v?'badge-green':'badge-muted'}">${v?'ON':'OFF'}</span>`}
+function txLink(h){
+  if(!h)return '';
+  if(/^0x[0-9a-fA-F]{64}$/.test(h))return `<div class="alert-meta">Tx: <a href="${CFG.EXPLORER}/tx/${h}" target="_blank" rel="noopener" style="color:var(--cyan)">${h.slice(0,20)}…</a></div>`;
+  return `<div class="alert-meta">Tx: ${esc(h)}</div>`;
+}
 
 /* ── Alerts ──────────────────────────────────────── */
+function renderPending(){
+  const el=document.getElementById('pending-list');
+  if(!pendingDetections.length){el.innerHTML='';return}
+  el.innerHTML=`<div class="card mb-4">
+    <div class="card-title">New detections — not yet recorded on-chain (${pendingDetections.length})</div>
+    ${pendingDetections.slice().reverse().map(p=>`
+      <div class="alert-item pending sev-${sevLabel(p.severity).toLowerCase()} mt-2">
+        <div class="sev-dot"></div>
+        <div class="alert-info">
+          <div class="alert-title">${esc(p.alertType)}</div>
+          <div class="alert-desc">${esc(p.description)}</div>
+          ${txLink(p.txHash)}
+          <div class="alert-meta">${esc(contractName(p.contractId))} · detected ${timeAgo(p.detectedAt)}</div>
+        </div>
+        <div class="alert-actions">
+          <button class="btn btn-primary btn-sm" onclick="recordDetection('${p.key}')">Record</button>
+          <button class="btn btn-outline btn-sm" onclick="dismissDetection('${p.key}')">Dismiss</button>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
 function renderAlerts(){
+  renderPending();
   const el=document.getElementById('alerts-list');
   const sevFilter=document.getElementById('alert-filter-sev').value;
   let alerts=[...myAlerts];
-  if(sevFilter)alerts=alerts.filter(a=>Number(a.severity)===Number(sevFilter));
+  if(sevFilter)alerts=alerts.filter(a=>a.severity===Number(sevFilter));
   alerts.reverse();
-  if(!alerts.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">🛡️</div><div class="empty-title">No alerts found</div><div class="empty-desc">No security alerts match your current filter.</div></div>`;return}
-  el.innerHTML=alerts.map(a=>{
-    const mc=monitoredContracts.find(m=>Number(m.contract.id)===Number(a.contractId));
-    const cname=mc?mc.contract.name:('Contract #'+a.contractId);
-    return `<div class="alert-item sev-${sevLabel(a.severity).toLowerCase()}" style="margin-bottom:.5rem">
+  if(!alerts.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">🛡️</div><div class="empty-title">No recorded alerts</div><div class="empty-desc">No on-chain security alerts match your current filter.</div></div>`;return}
+  el.innerHTML=alerts.map(a=>`
+    <div class="alert-item sev-${sevLabel(a.severity).toLowerCase()}" style="margin-bottom:.5rem">
       <div class="sev-dot"></div>
       <div class="alert-info">
         <div class="alert-title">${esc(a.alertType)}</div>
         <div class="alert-desc">${esc(a.description)}</div>
-        <div class="alert-meta">${esc(cname)} · ${formatDate(Number(a.detectedAt))}</div>
-        ${a.txHash?`<div class="alert-meta">Tx: <a href="https://scan.botchain.ai/tx/${a.txHash}" target="_blank" style="color:var(--cyan)">${a.txHash.slice(0,20)}…</a></div>`:''}
+        <div class="alert-meta">${esc(contractName(a.contractId))} · ${formatDate(a.detectedAt)}</div>
+        ${txLink(a.txHash)}
       </div>
-      <div class="alert-actions flex-col items-center gap-1">
+      <div class="alert-actions flex-col items-center gap-2">
         <span class="badge ${sevBadge(a.severity)}">${sevLabel(a.severity)}</span>
         ${!a.acknowledged?`<button class="btn btn-outline btn-sm" onclick="ackAlert(${a.id})">Ack</button>`:'<span class="badge badge-muted text-xs">Resolved</span>'}
       </div>
-    </div>`;
-  }).join('');
+    </div>`).join('');
 }
 
 /* ── Reports ─────────────────────────────────────── */
@@ -1460,21 +1566,20 @@ function renderReports(){
   const el=document.getElementById('reports-list');
   if(!myReports.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-title">No reports yet</div><div class="empty-desc">Be the first to submit a security report for your monitored contracts.</div></div>`;return}
   el.innerHTML=myReports.slice().reverse().map(r=>{
-    const mc=monitoredContracts.find(m=>Number(m.contract.id)===Number(r.contractId));
-    const cname=mc?mc.contract.name:('Contract #'+r.contractId);
+    const own=userAddress&&r.reportedBy.toLowerCase()===userAddress.toLowerCase();
     return `<div class="card card-hover" style="margin-bottom:.75rem">
-      <div class="flex justify-between items-start">
-        <div>
+      <div class="flex justify-between items-start gap-3">
+        <div style="min-width:0">
           <div class="font-semibold">${esc(r.reportTitle)}</div>
-          <div class="text-xs text-muted mt-1">${esc(cname)} · ${formatDate(Number(r.createdAt))}</div>
+          <div class="text-xs text-muted mt-1">${esc(contractName(r.contractId))} · ${formatDate(r.createdAt)}</div>
         </div>
         <div class="flex gap-2 items-center">
           <span class="badge ${sevBadge(r.severity)}">${sevLabel(r.severity)}</span>
-          <button class="btn btn-outline btn-sm" onclick="upvoteReport(${r.id})">👍 ${r.upvotes}</button>
+          <button class="btn btn-outline btn-sm" ${own?'disabled title="You cannot upvote your own report"':''} onclick="upvoteReport(${r.id})">👍 ${r.upvotes}</button>
         </div>
       </div>
-      <div class="text-sm text-secondary mt-2" style="line-height:1.6">${esc(r.reportContent)}</div>
-      <div class="text-xs text-muted mt-2">By: ${shortenAddr(r.reportedBy)}</div>
+      <div class="text-sm text-secondary mt-2" style="line-height:1.6;white-space:pre-wrap;word-break:break-word">${esc(r.reportContent)}</div>
+      <div class="text-xs text-muted mt-2">By: ${shortenAddr(r.reportedBy)}${own?' (you)':''}</div>
     </div>`;
   }).join('');
 }
@@ -1487,87 +1592,75 @@ function renderProfile(){
     <div class="detail-grid mt-2">
       <div class="detail-field"><div class="detail-field-label">Username</div><div class="detail-field-value">${esc(userProfile.username)}</div></div>
       <div class="detail-field"><div class="detail-field-label">Wallet</div><div class="detail-field-value" style="font-family:monospace;font-size:.78rem">${shortenAddr(String(userProfile.wallet))}</div></div>
-      <div class="detail-field"><div class="detail-field-label">Email</div><div class="detail-field-value">${esc(userProfile.email)||'—'}</div></div>
+      <div class="detail-field"><div class="detail-field-label">Email (public)</div><div class="detail-field-value">${esc(userProfile.email)||'—'}</div></div>
       <div class="detail-field"><div class="detail-field-label">Plan</div><div class="detail-field-value ${userProfile.isPremium?'text-green':''}">${userProfile.isPremium?'Premium':'Free'}</div></div>
-      <div class="detail-field"><div class="detail-field-label">Registered</div><div class="detail-field-value">${formatDate(Number(userProfile.registeredAt))}</div></div>
-      <div class="detail-field"><div class="detail-field-label">Total Alerts</div><div class="detail-field-value">${Number(userProfile.totalAlerts)}</div></div>
+      <div class="detail-field"><div class="detail-field-label">Registered</div><div class="detail-field-value">${formatDate(userProfile.registeredAt)}</div></div>
+      <div class="detail-field"><div class="detail-field-label">Total Alerts</div><div class="detail-field-value">${userProfile.totalAlerts}</div></div>
     </div>
-    <div class="mt-4 flex gap-3 flex-wrap">
+    <div class="mt-4 flex gap-3" style="flex-wrap:wrap">
       <button class="btn btn-secondary btn-sm" onclick="openEditProfile()">✏️ Edit Profile</button>
+      <a class="btn btn-outline btn-sm" href="${CFG.EXPLORER}/address/${userAddress}" target="_blank" rel="noopener">🔍 Wallet on Explorer</a>
       <button class="btn btn-danger btn-sm" onclick="disconnect()">Disconnect Wallet</button>
     </div>`;
-}
-
-function openEditProfile(){
-  document.getElementById('reg-username').value=userProfile?.username||'';
-  document.getElementById('reg-email').value=userProfile?.email||'';
-  document.getElementById('reg-btn').textContent='Update Profile';
-  document.getElementById('reg-btn').onclick=updateProfile;
-  showRegisterScreen();
-}
-
-async function updateProfile(){
-  const username=document.getElementById('reg-username').value.trim();
-  const email=document.getElementById('reg-email').value.trim();
-  if(!username){toast('Username required','warning');return}
-  const btn=document.getElementById('reg-btn');btn.disabled=true;btn.innerHTML='<div class="spinner"></div>';
-  try{
-    const tx=await contract.updateProfile(username,email);
-    await tx.wait();
-    toast('Profile updated!','success');
-    await loadUserData();showApp();showPage('profile');
-  }catch(e){toast('Update failed: '+errorMsg(e),'error')}
-  finally{btn.disabled=false;btn.textContent='Update Profile';btn.onclick=updateProfile}
 }
 
 /* ══════════════════════════════════════════════════════
    ADD CONTRACT
 ══════════════════════════════════════════════════════ */
-function openAddContractModal(){openModal('modal-add-contract')}
+function openAddContractModal(){
+  ['ac-address','ac-name','ac-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ac-network').selectedIndex=0;
+  document.getElementById('ac-threshold').value='1';
+  document.getElementById('ac-abnormal').value='100';
+  ['mr-ownership','mr-minting','mr-withdraw','mr-admin','mr-upgrade','mr-abnormal','mr-token'].forEach(id=>document.getElementById(id).checked=true);
+  openModal('modal-add-contract');
+}
 
 async function submitAddContract(){
   const address=document.getElementById('ac-address').value.trim();
   const name=document.getElementById('ac-name').value.trim();
-  const descEl=document.getElementById('ac-desc');
-  const networkVal=document.getElementById('ac-network').value;
-  const [netName,netChainId]=networkVal.split('|');
+  const desc=document.getElementById('ac-desc').value.trim();
+  const [netName,netChainId]=document.getElementById('ac-network').value.split('|');
 
   if(!ethers.isAddress(address)){toast('Invalid contract address','warning');return}
   if(!name){toast('Contract name is required','warning');return}
 
+  let threshold, abnormal;
+  try{ threshold=ethers.parseEther(document.getElementById('ac-threshold').value.trim()||'1'); }
+  catch{ toast('Invalid transfer threshold','warning');return }
+  abnormal=parseInt(document.getElementById('ac-abnormal').value||'100');
+  if(!Number.isInteger(abnormal)||abnormal<1){toast('Invalid abnormal activity threshold','warning');return}
+
+  const rules={
+    own:document.getElementById('mr-ownership').checked,
+    mint:document.getElementById('mr-minting').checked,
+    wd:document.getElementById('mr-withdraw').checked,
+    admin:document.getElementById('mr-admin').checked,
+    up:document.getElementById('mr-upgrade').checked,
+    abn:document.getElementById('mr-abnormal').checked,
+    tok:document.getElementById('mr-token').checked
+  };
+  // The contract defaults to "watch everything, 1 token, 100 txs" — only send a second tx if something differs
+  const isDefault=Object.values(rules).every(Boolean)&&threshold===ethers.parseEther('1')&&abnormal===100;
+
   const btn=document.getElementById('ac-submit-btn');
   btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Registering…';
   try{
-    const tx=await contract.registerContract(address,netName,BigInt(netChainId),name,descEl.value.trim());
-    toast('Transaction submitted…','info');
-    const receipt=await tx.wait();
-    // Parse the contractId from events
+    const receipt=await sendTx(()=>contract.registerContract(address,netName,BigInt(netChainId),name,desc),'Contract registered on-chain!');
     let newId=null;
     for(const log of receipt.logs){
       try{
         const parsed=contract.interface.parseLog(log);
-        if(parsed?.name==='ContractRegistered')newId=parsed.args[0];
+        if(parsed?.name==='ContractRegistered')newId=parsed.args.contractId;
       }catch(e){}
     }
-    toast('Contract registered on-chain!','success');
     closeModal('modal-add-contract');
 
-    // Update monitoring config
-    if(newId!==null){
-      const cfgTx=await contract.updateMonitoringConfig(
-        newId,
-        document.getElementById('mr-ownership').checked,
-        document.getElementById('mr-minting').checked,
-        document.getElementById('mr-withdraw').checked,
-        document.getElementById('mr-admin').checked,
-        document.getElementById('mr-upgrade').checked,
-        document.getElementById('mr-abnormal').checked,
-        document.getElementById('mr-token').checked,
-        ethers.parseEther('1'),100n
-      );
-      await cfgTx.wait();
+    if(newId!==null&&!isDefault){
+      await sendTx(()=>contract.updateMonitoringConfig(newId,rules.own,rules.mint,rules.wd,rules.admin,rules.up,rules.abn,rules.tok,threshold,BigInt(abnormal)),'Monitoring rules saved');
     }
-    await loadUserData();loadDashboard();renderContractsPage();
+    await loadUserData();loadDashboard();
+    if(currentPage==='contracts')renderContractsPage();
   }catch(e){toast('Failed: '+errorMsg(e),'error')}
   finally{btn.disabled=false;btn.textContent='Register Contract'}
 }
@@ -1576,21 +1669,22 @@ async function submitAddContract(){
    DEACTIVATE
 ══════════════════════════════════════════════════════ */
 function confirmDeactivate(contractId){
-  const mc=monitoredContracts.find(m=>Number(m.contract.id)===Number(contractId));
+  const mc=monitoredContracts.find(m=>m.contract.id===Number(contractId));
   document.getElementById('confirm-title').textContent='Remove Contract';
-  document.getElementById('confirm-msg').textContent=`Are you sure you want to stop monitoring "${mc?.contract.name||'this contract'}"? This action will deactivate monitoring on-chain.`;
+  document.getElementById('confirm-msg').textContent=`Are you sure you want to stop monitoring "${mc?.contract.name||'this contract'}"? This deactivates it on-chain.`;
   document.getElementById('confirm-ok-btn').onclick=()=>deactivateContract(contractId);
   openModal('modal-confirm');
 }
 async function deactivateContract(contractId){
   closeModal('modal-confirm');
   try{
-    const tx=await contract.deactivateContract(contractId);
-    toast('Deactivating…','info');
-    await tx.wait();
-    toast('Contract removed from monitoring.','success');
-    await loadUserData();loadDashboard();renderContractsPage();
+    await sendTx(()=>contract.deactivateContract(contractId),'Contract removed from monitoring.');
+    pendingDetections=pendingDetections.filter(p=>p.contractId!==Number(contractId));
+    delete lastScannedBlock[contractId];
+    await loadUserData();
     if(currentPage==='contract-detail')showPage('contracts');
+    else if(currentPage==='contracts')renderContractsPage();
+    else loadDashboard();
   }catch(e){toast('Failed: '+errorMsg(e),'error')}
 }
 
@@ -1598,14 +1692,13 @@ async function deactivateContract(contractId){
    ALERTS — ACK
 ══════════════════════════════════════════════════════ */
 async function ackAlert(alertId){
+  const cid=myAlerts.find(a=>a.id===Number(alertId))?.contractId;
   try{
-    const tx=await contract.acknowledgeAlert(alertId);
-    toast('Acknowledging alert…','info');
-    await tx.wait();
-    toast('Alert acknowledged','success');
-    await loadUserData();loadDashboard();
+    await sendTx(()=>contract.acknowledgeAlert(alertId),'Alert acknowledged');
+    await loadUserData();
     if(currentPage==='alerts')renderAlerts();
-    if(currentPage==='contract-detail')showContractDetail(myAlerts.find(a=>Number(a.id)===Number(alertId))?.contractId);
+    else if(currentPage==='contract-detail'&&cid)showContractDetail(cid);
+    else loadDashboard();
   }catch(e){toast('Failed: '+errorMsg(e),'error')}
 }
 
@@ -1613,9 +1706,13 @@ async function ackAlert(alertId){
    REPORTS
 ══════════════════════════════════════════════════════ */
 function openReportModal(){
+  if(!monitoredContracts.length){toast('Add a contract first','warning');return}
   const sel=document.getElementById('rp-contract');
   sel.innerHTML='<option value="">Select a contract…</option>'+
     monitoredContracts.map(m=>`<option value="${m.contract.id}">${esc(m.contract.name)}</option>`).join('');
+  document.getElementById('rp-title').value='';
+  document.getElementById('rp-content').value='';
+  document.getElementById('rp-sev').value='2';
   openModal('modal-report');
 }
 async function submitReport(){
@@ -1628,10 +1725,7 @@ async function submitReport(){
   if(!content){toast('Content required','warning');return}
   const btn=document.getElementById('rp-submit-btn');btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Submitting…';
   try{
-    const tx=await contract.createReport(BigInt(cid),title,content,sev);
-    toast('Submitting report on-chain…','info');
-    await tx.wait();
-    toast('Security report stored on-chain!','success');
+    await sendTx(()=>contract.createReport(BigInt(cid),title,content,sev),'Security report stored on-chain!');
     closeModal('modal-report');
     await loadUserData();renderReports();
   }catch(e){toast('Failed: '+errorMsg(e),'error')}
@@ -1639,179 +1733,145 @@ async function submitReport(){
 }
 async function upvoteReport(reportId){
   try{
-    const tx=await contract.upvoteReport(reportId);
-    await tx.wait();
-    toast('Report upvoted!','success');
+    await sendTx(()=>contract.upvoteReport(reportId),'Report upvoted!');
     await loadUserData();renderReports();
   }catch(e){toast('Failed: '+errorMsg(e),'error')}
 }
 
 /* ══════════════════════════════════════════════════════
    MONITORING ENGINE
-   Polls BOT Chain RPC for contract events using ethers.js
+   Polls BOT Chain Testnet logs for each live contract.
+   Detections are queued for review — nothing is sent
+   on-chain without the user clicking "Record".
 ══════════════════════════════════════════════════════ */
-async function startMonitoring(){
-  if(monitorInterval)clearInterval(monitorInterval);
-  if(!monitoredContracts.length)return;
+const TOPICS={
+  ownership:ethers.id('OwnershipTransferred(address,address)'),
+  adminChanged:ethers.id('AdminChanged(address,address)'),
+  roleGranted:ethers.id('RoleGranted(bytes32,address,address)'),
+  roleRevoked:ethers.id('RoleRevoked(bytes32,address,address)'),
+  upgraded:ethers.id('Upgraded(address)'),
+  beaconUpgraded:ethers.id('BeaconUpgraded(address)'),
+  transfer:ethers.id('Transfer(address,address,uint256)'),
+  withdrawal:ethers.id('Withdrawal(address,uint256)'),
+  withdrawn:ethers.id('Withdrawn(address,uint256)')
+};
+const ZERO_TOPIC='0x'+'0'.repeat(64);
+
+function startMonitoring(){
+  stopMonitoring();
+  const live=monitoredContracts.filter(m=>isLive(m.contract));
+  if(!live.length)return;
   document.getElementById('monitor-pulse').classList.remove('hidden');
   document.getElementById('monitor-status').style.display='flex';
-
-  // Known event topic hashes for common patterns
-  const OWNERSHIP_TOPICS=[
-    ethers.id('OwnershipTransferred(address,address)'),
-    ethers.id('AdminChanged(address,address)'),
-    ethers.id('RoleGranted(bytes32,address,address)'),
-    ethers.id('RoleRevoked(bytes32,address,address)')
-  ];
-  const UPGRADE_TOPICS=[
-    ethers.id('Upgraded(address)'),
-    ethers.id('BeaconUpgraded(address)')
-  ];
-  const TRANSFER_TOPICS=[ethers.id('Transfer(address,address,uint256)')];
-  const MINTING_TOPIC=ethers.id('Transfer(address,address,uint256)');
-  const WITHDRAWAL_TOPICS=[
-    ethers.id('Withdrawal(address,uint256)'),
-    ethers.id('Withdrawn(address,uint256)')
-  ];
-
-  async function checkContract(mc){
-    try{
-      const prov=new ethers.BrowserProvider(window.ethereum);
-      const latestBlock=await prov.getBlockNumber();
-      const fromBlock=Math.max(latestBlock-50,0); // last ~50 blocks
-      const cfg=mc.config;
-
-      // ── Ownership / Admin changes
-      if(cfg.watchOwnershipChanges||cfg.watchAdminOps){
-        for(const topic of OWNERSHIP_TOPICS){
-          const logs=await prov.getLogs({address:mc.contract.contractAddress,topics:[topic],fromBlock,toBlock:'latest'});
-          for(const log of logs){
-            const aType=topic===OWNERSHIP_TOPICS[0]?'Ownership Transfer':
-              topic===OWNERSHIP_TOPICS[1]?'Admin Changed':
-              topic===OWNERSHIP_TOPICS[2]?'Role Granted':'Role Revoked';
-            await recordAlert(mc.contract.id,aType,`${aType} detected on ${mc.contract.name}`,log.transactionHash,3);
-          }
-        }
-      }
-
-      // ── Upgrades
-      if(cfg.watchUpgrades){
-        for(const topic of UPGRADE_TOPICS){
-          const logs=await prov.getLogs({address:mc.contract.contractAddress,topics:[topic],fromBlock,toBlock:'latest'});
-          for(const log of logs){
-            await recordAlert(mc.contract.id,'Contract Upgraded',`Contract upgrade detected on ${mc.contract.name} — verify legitimacy`,log.transactionHash,3);
-          }
-        }
-      }
-
-      // ── Minting (Transfer from zero address)
-      if(cfg.watchMinting){
-        const logs=await prov.getLogs({address:mc.contract.contractAddress,topics:[MINTING_TOPIC],fromBlock,toBlock:'latest'});
-        for(const log of logs){
-          if(log.topics[1]==='0x0000000000000000000000000000000000000000000000000000000000000000'){
-            await recordAlert(mc.contract.id,'Unexpected Minting',`New tokens minted on ${mc.contract.name}`,log.transactionHash,2);
-          }
-        }
-      }
-
-      // ── Large transfers
-      if(cfg.watchTokenMovements||cfg.watchLargeWithdrawals){
-        const logs=await prov.getLogs({address:mc.contract.contractAddress,topics:[TRANSFER_TOPICS[0]],fromBlock,toBlock:'latest'});
-        for(const log of logs){
-          if(log.data&&log.data!=='0x'){
-            try{
-              const amount=BigInt(log.data);
-              if(amount>=cfg.largeWithdrawalThreshold){
-                await recordAlert(mc.contract.id,'Large Token Transfer',`Large transfer of ${ethers.formatEther(amount)} tokens detected on ${mc.contract.name}`,log.transactionHash,2);
-              }
-            }catch(e){}
-          }
-        }
-      }
-
-      // ── Withdrawals
-      if(cfg.watchLargeWithdrawals){
-        for(const topic of WITHDRAWAL_TOPICS){
-          const logs=await prov.getLogs({address:mc.contract.contractAddress,topics:[topic],fromBlock,toBlock:'latest'});
-          for(const log of logs){
-            await recordAlert(mc.contract.id,'Large Withdrawal',`Withdrawal event detected on ${mc.contract.name}`,log.transactionHash,2);
-          }
-        }
-      }
-
-      // Mark as checked
-      if(CONTRACT_ADDRESS!=='0x0000000000000000000000000000000000000000'){
-        try{await contract.markContractChecked(mc.contract.id)}catch(e){}
-      }
-    }catch(e){console.warn('Monitor error for contract',mc.contract.id,e)}
-  }
-
-  // Track already-processed tx hashes to avoid duplicates
-  const processed=new Set();
-  async function recordAlert(contractId,alertType,desc,txHash,severity){
-    const key=`${contractId}:${txHash}:${alertType}`;
-    if(processed.has(key))return;
-    processed.add(key);
-    // Check not already in myAlerts
-    if(myAlerts.some(a=>a.txHash===txHash&&a.alertType===alertType))return;
-    if(CONTRACT_ADDRESS!=='0x0000000000000000000000000000000000000000'){
-      try{
-        const tx=await contract.createAlert(contractId,alertType,desc,txHash||'',severity);
-        await tx.wait();
-        await loadUserData();loadDashboard();
-        if(currentPage==='alerts')renderAlerts();
-        toast(`⚠️ Alert: ${alertType} on contract #${contractId}`,'warning');
-      }catch(e){console.warn('createAlert error',e)}
-    }else{
-      // Demo mode: add locally
-      myAlerts.push({id:BigInt(myAlerts.length+1),contractId:BigInt(contractId),alertType,description:desc,txHash:txHash||'',severity:BigInt(severity),detectedAt:BigInt(Math.floor(Date.now()/1000)),acknowledged:false,acknowledgedBy:'0x',acknowledgedAt:0n});
-      loadDashboard();
-      if(currentPage==='alerts')renderAlerts();
-      toast(`⚠️ Alert: ${alertType}`,'warning');
-    }
-  }
-
-  // Run immediately, then every 60s
-  for(const mc of monitoredContracts)checkContract(mc);
-  monitorInterval=setInterval(async()=>{
-    for(const mc of monitoredContracts)await checkContract(mc);
-  },60000);
+  const run=async()=>{for(const mc of monitoredContracts.filter(m=>isLive(m.contract)))await checkContract(mc)};
+  run();
+  monitorInterval=setInterval(run,MONITOR_INTERVAL_MS);
+}
+function stopMonitoring(){
+  if(monitorInterval)clearInterval(monitorInterval);
+  monitorInterval=null;
+  document.getElementById('monitor-pulse').classList.add('hidden');
+  document.getElementById('monitor-status').style.display='none';
 }
 
-/* ══════════════════════════════════════════════════════
-   DEMO MODE
-══════════════════════════════════════════════════════ */
-function enterDemoMode(){
-  userAddress='0xDe4dBEEf0000000000000000000000000000DEAD';
-  userProfile={wallet:userAddress,username:'DemoUser',email:'demo@contractwatch.io',registeredAt:BigInt(Math.floor(Date.now()/1000)-86400*30),totalContracts:3n,totalAlerts:5n,exists:true,isPremium:false};
-  monitoredContracts=[
-    {contract:{id:1n,contractAddress:'0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',networkName:'BOT Chain',networkChainId:677n,name:'USDC Token',description:'USD Coin stablecoin contract on BOT Chain',addedBy:userAddress,addedAt:BigInt(Math.floor(Date.now()/1000)-86400*7),lastCheckedAt:BigInt(Math.floor(Date.now()/1000)-120),active:true,exists:true},config:{watchOwnershipChanges:true,watchMinting:true,watchLargeWithdrawals:true,watchAdminOps:true,watchUpgrades:true,watchAbnormalActivity:true,watchTokenMovements:true,largeWithdrawalThreshold:ethers.parseEther('1'),abnormalTxThreshold:100n}},
-    {contract:{id:2n,contractAddress:'0xdAC17F958D2ee523a2206206994597C13D831ec7',networkName:'BOT Chain',networkChainId:677n,name:'USDT Contract',description:'Tether USD token contract',addedBy:userAddress,addedAt:BigInt(Math.floor(Date.now()/1000)-86400*3),lastCheckedAt:BigInt(Math.floor(Date.now()/1000)-300),active:true,exists:true},config:{watchOwnershipChanges:true,watchMinting:false,watchLargeWithdrawals:true,watchAdminOps:true,watchUpgrades:true,watchAbnormalActivity:true,watchTokenMovements:true,largeWithdrawalThreshold:ethers.parseEther('1'),abnormalTxThreshold:100n}},
-    {contract:{id:3n,contractAddress:'0x6B175474E89094C44Da98b954EedeAC495271d0F',networkName:'Ethereum',networkChainId:1n,name:'DAI Stablecoin',description:'MakerDAO DAI decentralised stablecoin',addedBy:userAddress,addedAt:BigInt(Math.floor(Date.now()/1000)-86400*1),lastCheckedAt:BigInt(Math.floor(Date.now()/1000)-60),active:true,exists:true},config:{watchOwnershipChanges:true,watchMinting:true,watchLargeWithdrawals:true,watchAdminOps:true,watchUpgrades:false,watchAbnormalActivity:true,watchTokenMovements:true,largeWithdrawalThreshold:ethers.parseEther('1'),abnormalTxThreshold:100n}}
-  ];
-  myAlerts=[
-    {id:1n,contractId:1n,alertType:'Ownership Transfer',description:'OwnershipTransferred event detected on USDC Token — verify legitimacy.',txHash:'0xabc123def456abc123def456abc123def456abc123def456abc123def456abc1',severity:3n,detectedAt:BigInt(Math.floor(Date.now()/1000)-3600),acknowledged:false,acknowledgedBy:'0x',acknowledgedAt:0n},
-    {id:2n,contractId:1n,alertType:'Large Token Transfer',description:'Transfer of 1,500,000 USDC detected — large movement flag triggered.',txHash:'0xdef456abc789def456abc789def456abc789def456abc789def456abc789def4',severity:2n,detectedAt:BigInt(Math.floor(Date.now()/1000)-7200),acknowledged:false,acknowledgedBy:'0x',acknowledgedAt:0n},
-    {id:3n,contractId:2n,alertType:'Admin Changed',description:'AdminChanged event emitted on USDT Contract — new proxy admin assigned.',txHash:'0x789abc123456789abc123456789abc123456789abc123456789abc123456789a',severity:3n,detectedAt:BigInt(Math.floor(Date.now()/1000)-14400),acknowledged:true,acknowledgedBy:userAddress,acknowledgedAt:BigInt(Math.floor(Date.now()/1000)-13000)},
-    {id:4n,contractId:3n,alertType:'Unexpected Minting',description:'Tokens minted from zero address on DAI Stablecoin — verify authorisation.',txHash:'0x321fed654cba321fed654cba321fed654cba321fed654cba321fed654cba321f',severity:2n,detectedAt:BigInt(Math.floor(Date.now()/1000)-21600),acknowledged:false,acknowledgedBy:'0x',acknowledgedAt:0n},
-    {id:5n,contractId:1n,alertType:'Unusual Token Movement',description:'Abnormal token movement pattern detected — 50 large transfers in last 100 blocks.',txHash:'0xfed321abc654fed321abc654fed321abc654fed321abc654fed321abc654fed3',severity:1n,detectedAt:BigInt(Math.floor(Date.now()/1000)-86400),acknowledged:false,acknowledgedBy:'0x',acknowledgedAt:0n}
-  ];
-  myReports=[
-    {id:1n,contractId:1n,reportedBy:'0xAbCdEf1234567890AbCdEf1234567890AbCdEf12',reportTitle:'Potential Reentrancy in Withdrawal Function',reportContent:'Analysis of the contract bytecode reveals a pattern consistent with a reentrancy vulnerability in the withdraw() function. The state update occurs after the external call, allowing a malicious contract to re-enter before the balance is zeroed.',severity:3n,createdAt:BigInt(Math.floor(Date.now()/1000)-43200),upvotes:7n}
-  ];
-  document.getElementById('nav-wallet-addr').textContent=shortenAddr(userAddress);
-  document.getElementById('nav-wallet-addr').classList.remove('hidden');
-  setEl('stat-users','1,247');setEl('stat-contracts','3,891');setEl('stat-alerts-hero','12,540');
-  setEl('ps-users','1,247');setEl('ps-contracts','3,891');setEl('ps-alerts','12,540');setEl('ps-reports','487');
-  showApp();loadDashboard();
+async function checkContract(mc){
+  const c=mc.contract,cfg=mc.config;
+  try{
+    const prov=chainProvider();
+    const latest=await prov.getBlockNumber();
+    const last=lastScannedBlock[c.id];
+    const fromBlock=last!==undefined?last+1:Math.max(latest-SCAN_BLOCKS,0);
+    if(fromBlock>latest)return;
+    const logs=await prov.getLogs({address:c.contractAddress,fromBlock,toBlock:latest});
+    lastScannedBlock[c.id]=latest;
+
+    const watchAdmin=cfg.watchOwnershipChanges||cfg.watchAdminOps;
+    for(const log of logs){
+      const t0=log.topics[0],tx=log.transactionHash;
+      if(t0===TOPICS.ownership&&cfg.watchOwnershipChanges)
+        addDetection(c.id,'Ownership Transfer',`OwnershipTransferred emitted on ${c.name} — verify it was authorised.`,tx,3);
+      else if(t0===TOPICS.adminChanged&&watchAdmin)
+        addDetection(c.id,'Admin Changed',`Proxy admin changed on ${c.name}.`,tx,3);
+      else if(t0===TOPICS.roleGranted&&watchAdmin)
+        addDetection(c.id,'Role Granted',`A role was granted on ${c.name}.`,tx,3);
+      else if(t0===TOPICS.roleRevoked&&watchAdmin)
+        addDetection(c.id,'Role Revoked',`A role was revoked on ${c.name}.`,tx,3);
+      else if((t0===TOPICS.upgraded||t0===TOPICS.beaconUpgraded)&&cfg.watchUpgrades)
+        addDetection(c.id,'Contract Upgraded',`Contract upgrade detected on ${c.name} — verify legitimacy.`,tx,3);
+      else if((t0===TOPICS.withdrawal||t0===TOPICS.withdrawn)&&cfg.watchLargeWithdrawals)
+        addDetection(c.id,'Withdrawal',`Withdrawal event detected on ${c.name}.`,tx,2);
+      else if(t0===TOPICS.transfer&&log.topics.length===3){ // ERC-20 (ERC-721 has 4 topics)
+        const amount=log.data&&log.data!=='0x'?BigInt(log.data):0n;
+        if(cfg.watchMinting&&log.topics[1]===ZERO_TOPIC)
+          addDetection(c.id,'Token Minting',`${ethers.formatEther(amount)} tokens minted on ${c.name}.`,tx,2);
+        else if((cfg.watchTokenMovements||cfg.watchLargeWithdrawals)&&amount>=cfg.largeWithdrawalThreshold)
+          addDetection(c.id,'Large Token Transfer',`Transfer of ${ethers.formatEther(amount)} tokens on ${c.name} (threshold ${ethers.formatEther(cfg.largeWithdrawalThreshold)}).`,tx,2);
+      }
+    }
+
+    // Abnormal activity: many distinct transactions in one scan window
+    if(cfg.watchAbnormalActivity&&last!==undefined){
+      const txCount=new Set(logs.map(l=>l.transactionHash)).size;
+      if(txCount>=cfg.abnormalTxThreshold)
+        addDetection(c.id,'Abnormal Activity',`${txCount} transactions touched ${c.name} between blocks ${fromBlock}–${latest}.`,'',1,`${fromBlock}-${latest}`);
+    }
+
+    if(currentPage==='contract-detail')setDetailBlock(c.id);
+  }catch(e){console.warn('Monitor error for contract',c.id,e)}
+}
+function setDetailBlock(){/* detail view re-renders on navigation; nothing to do live */}
+
+function addDetection(contractId,alertType,description,txHash,severity,extraKey=''){
+  const key=`${contractId}:${txHash||extraKey}:${alertType}`;
+  if(seenDetections.has(key))return;
+  seenDetections.add(key);
+  if(txHash&&myAlerts.some(a=>a.contractId===contractId&&a.txHash===txHash&&a.alertType===alertType))return;
+  pendingDetections.push({key,contractId,alertType,description,txHash,severity,detectedAt:Math.floor(Date.now()/1000)});
+  updatePendingCount();
+  toast(`${alertType} detected on ${contractName(contractId)} — review it in Alerts`,'warning');
+  if(currentPage==='alerts')renderPending();
+}
+
+function updatePendingCount(){
+  const el=document.getElementById('pending-count');
+  if(!el)return;
+  el.textContent=pendingDetections.length;
+  el.classList.toggle('hidden',!pendingDetections.length);
+}
+
+async function recordDetection(key){
+  const p=pendingDetections.find(x=>x.key===key);
+  if(!p)return;
+  try{
+    await sendTx(()=>contract.createAlert(p.contractId,p.alertType,p.description,p.txHash||'',p.severity),'Alert recorded on-chain');
+    pendingDetections=pendingDetections.filter(x=>x.key!==key);
+    await loadUserData();
+    renderAlerts();
+  }catch(e){toast('Failed: '+errorMsg(e),'error')}
+}
+function dismissDetection(key){
+  pendingDetections=pendingDetections.filter(x=>x.key!==key);
+  updatePendingCount();
+  renderPending();
 }
 
 /* ══════════════════════════════════════════════════════
    HELPERS
 ══════════════════════════════════════════════════════ */
-function shortenAddr(addr){return addr?addr.slice(0,6)+'…'+addr.slice(-4):''};
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function errorMsg(e){return e?.reason||e?.data?.message||e?.message||'Unknown error'}
+async function sendTx(fn,okMsg){
+  toast('Confirm in your wallet…','info',3000);
+  const tx=await fn();
+  toast('Transaction sent — waiting for confirmation…','info',3000);
+  const receipt=await tx.wait();
+  toast(okMsg,'success');
+  return receipt;
+}
+function shortenAddr(addr){return addr?addr.slice(0,6)+'…'+addr.slice(-4):''}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function errorMsg(e){
+  if(e?.code==='ACTION_REJECTED'||e?.code===4001)return 'Transaction rejected';
+  return e?.reason||e?.shortMessage||e?.info?.error?.message||e?.data?.message||e?.message||'Unknown error';
+}
 function formatDate(ts){return ts?new Date(ts*1000).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—'}
 function timeAgo(ts){
   if(!ts)return '—';
@@ -1853,8 +1913,7 @@ function animateCounter(id,target,duration=1500){
   const t=parseInt(target)||0;
   function step(){
     const progress=Math.min((Date.now()-start)/duration,1);
-    const val=Math.floor(progress*t);
-    el.textContent=val.toLocaleString();
+    el.textContent=Math.floor(progress*t).toLocaleString();
     if(progress<1)requestAnimationFrame(step);
   }
   step();
@@ -1863,36 +1922,21 @@ function animateCounter(id,target,duration=1500){
 /* ══════════════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════════════ */
+const cl=document.getElementById('contract-link');
+cl.href=`${CFG.EXPLORER}/address/${CFG.CONTRACT_ADDRESS}`;
+cl.textContent=shortenAddr(CFG.CONTRACT_ADDRESS);
+
 window.addEventListener('load',()=>{
+  initFAQ();
   setTimeout(()=>{
     document.getElementById('loading-overlay').classList.add('hidden');
-    // Animate hero counters with placeholder values until real data loads
-    animateCounter('stat-users',1247);
-    animateCounter('stat-contracts',3891);
-    animateCounter('stat-alerts-hero',12540);
-    // Load platform stats if provider available
-    if(window.ethereum){
-      try{
-        const p=new ethers.BrowserProvider(window.ethereum);
-        const c=new ethers.Contract(CONTRACT_ADDRESS,CONTRACT_ABI,p);
-        c.getPlatformStats().then(([u,ct,a])=>{
-          animateCounter('stat-users',Number(u));
-          animateCounter('stat-contracts',Number(ct));
-          animateCounter('stat-alerts-hero',Number(a));
-        }).catch(()=>{});
-      }catch(e){}
-    }
+    loadPlatformStats(); // reads from the public RPC, no wallet needed
   },1800);
-  initFAQ();
-  // Check if previously connected
-  if(window.ethereum&&window.ethereum.selectedAddress){
-    // Don't auto-connect — wait for user action
-  }
 });
 
 // Handle account / chain changes
-if(window.ethereum){
-  window.ethereum.on('accountsChanged',()=>disconnect());
+if(window.ethereum&&window.ethereum.on){
+  window.ethereum.on('accountsChanged',()=>{if(userAddress)disconnect()});
   window.ethereum.on('chainChanged',()=>window.location.reload());
 }
 </script>
